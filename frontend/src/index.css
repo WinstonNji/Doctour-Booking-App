@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #5f6fff
+}
+
+.menuNav .a.active{
+  background-color: #5f6fff;
+  padding: 12px;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+}
+
+.desktopNav .a.active{
+  text-decoration: underline;
+  text-decoration-color: #5f6fff;
+  text-underline-offset: 6px;
+  font-weight: 500;
+}
