@@ -22,7 +22,7 @@ const MobileMenu = () => {
 
     return (
     <>
-        <div className='flex justify-between  pt-4 pb-1 relative md:hidden' >
+        <div className='flex justify-between  py-4  relative md:hidden' >
             
             <img className='w-38' src={assets.admin_logo} alt="" />            
 
@@ -66,18 +66,18 @@ const MobileMenu = () => {
                     </div>
 
                     <div className='menuNav pt-5 bg-white' >
-                        <ul className='flex flex-col gap-3 items-center'>
+                        <ul className={`flex flex-col gap-3 items-center`}>
                             <NavLink to='/' className='a'>
-                                <li >HOME</li>
+                                <li onClick={()=> setMenuOpen(false)} >HOME</li>
                             </NavLink>
                             <NavLink to='/doctors'  className='a'>
-                                <li>ALL DOCTORS</li>
+                                <li onClick={()=> setMenuOpen(false)}>ALL DOCTORS</li>
                             </NavLink>
                             <NavLink to='/about'  className='a'>
-                                <li>ABOUT</li>
+                                <li onClick={()=> setMenuOpen(false)}>ABOUT</li>
                             </NavLink>
                             <NavLink to="/contact"  className='a'>
-                                <li>CONTACT</li>
+                                <li onClick={()=> setMenuOpen(false)}>CONTACT</li>
                             </NavLink>
                         </ul>
                     </div>

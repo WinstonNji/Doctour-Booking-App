@@ -1,7 +1,9 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #5f6fff
+  --color-primary: #5f6fff;
+  --breakpoint-tablet : 768px;
+  --color-secondary: #E2E5FF
 }
 
 .menuNav .a.active{
@@ -17,4 +19,8 @@
   text-decoration-color: #5f6fff;
   text-underline-offset: 6px;
   font-weight: 500;
+}
+
+.specialDoctorNav .a.active div{
+  background-color: #E2E5FF;
 }
