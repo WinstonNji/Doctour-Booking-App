@@ -34,13 +34,13 @@ const MobileMenu = () => {
 
                         
                         <ul className='flex-col gap-2 p-2 hidden group-hover:flex absolute top-[42px] right-3 bg-gray-100 w-42 group'>
-                            <NavLink>
+                            <NavLink to='/my-profile'>
                                 <li className='hover:font-bold hover:text-primary'>
                                     My Profile
                                 </li>
                             </NavLink>
 
-                            <NavLink>
+                            <NavLink to='/my-appointments'>
                                 <li className='hover:font-bold hover:text-primary'>
                                     My appointments
                                 </li>
@@ -125,13 +125,13 @@ const DesktopMenu = () => {
 
                 <div>
                     <ul className='flex-col gap-2 p-2 hidden group-hover:flex absolute top-[42px] right-[10%] bg-gray-100 w-42 group'>
-                        <NavLink>
+                        <NavLink to='/my-profile'>
                             <li className='hover:font-bold hover:text-primary'>
                                 My Profile
                             </li>
                         </NavLink>
 
-                        <NavLink>
+                        <NavLink to='/my-appointments'>
                             <li className='hover:font-bold hover:text-primary'>
                                 My appointments
                             </li>
