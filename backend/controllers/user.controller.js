@@ -1,0 +1,208 @@
+import jwt from "jsonwebtoken"
+import bcrypt from "bcrypt"
+import { userModel } from "../models/userModel.js"
+import validator from "validator"
+import { errorJson } from "../utils/errorJson.js"
+import {v2 as cloudinary} from "cloudinary"
+import { doctorModel } from "../models/doctor.model.js"
+import appointmentModel from "../models/appointment.model.js"
+
+// User sign-up
+export const userRegistration = async (req,res) => {
+    const {name, email , password} = req.body
+
+    if(!name, !email || !password){
+        return res.status.json({success:false, message: "Enter Valid credentials"})
+    }
+
+    const user = await userModel.findOne({email})
+
+    if(user){
+        return res.status(400).json({success:false, message: "User already exists. Log-in instead"})
+    }
+
+    if(!validator.isEmail(email)){
+        return errorJson(400, "Please Enter a valid email", res)
+    }
+
+    if(password.length < 8){
+        return res.status(400).json({success:false, message: "Password needs to be longer than 8characters"})
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10)
+
+    const newUser = new userModel({name, email, password: hashedPassword})
+    await newUser.save()
+
+    return res.status(200).json({success: true, message: `User successfully registered. Welcom ${name}`})
+
+}
+
+// User login
+export const userLogin = async (req,res) => {
+
+    const {email, password} = req.body
+
+    if(!email || !password){
+        return res.status(400).json({success:false,message: "Enter all fields"})
+    }
+
+    const user = await userModel.findOne({email})
+
+    if(!user){
+        return res.status(400).json({success: false, message: "Couldn't find user. Register instead"})
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password)
+    if(!isMatch){
+        return res.status(400).json({success: false, message: "Please enter valid Credentials."})
+    }
+ 
+    const token = jwt.sign({email, userId: user._id}, process.env.JWT_SECRET, {expiresIn: "30d"})
+
+    return res.status(200).json({success:true,token})
+}
+
+// get profile
+const getProfile = async (req,res) => {
+    const userId = req.user.userId
+
+    console.log(userId)
+
+    if(!userId){
+        return errorJson(res)
+    }
+
+    const user = await userModel.findById(userId).select("-password")
+
+    if(user){
+        return res.status(200).json({success:true, user})
+    }else{
+        return errorJson(500,"Couldn't find this user", res)
+    }
+}
+
+// Update profile
+const updateProfile = async (req,res) => {
+
+    let imageUrl = null
+
+    const {name, email, address, gender, dob, phone } = req.body
+
+    const imageFile = req.file
+
+    const userId = req.user.userId
+
+    console.log("userId:", userId )
+
+    if(!name || !email) {
+        return errorJson(400, 'Please enter a valid name and email', res)
+    }
+
+    if(!validator.isEmail(email)){
+        return errorJson(400, 'Please enter a valid email', res)
+    }
+
+    if(imageFile){
+        const ImageUpload = cloudinary.uploader.upload(imageFile.path, {resource_type: "image"})
+        imageUrl = (await ImageUpload).secure_url
+    }
+
+    const updatedValues = {
+        name,
+        email,
+        address,
+        gender,
+        dob,
+        phone,
+    }
+
+    if(imageUrl) updatedValues.image = imageUrl
+
+    const user = await userModel.findByIdAndUpdate(userId, updatedValues, {new: true, runValidators: true}).select('-password')
+
+    if(!user){
+        return errorJson(404, 'User Not Found', res)
+    }
+
+    return res.status(200).json({
+        success: true,
+        message: 'Profile updated successfully' 
+    })
+}
+
+// Book appointment
+
+const bookAppointment = async (req,res) => {
+    const userId = req.user.userId
+    const {docId, slotDate, slotTime} = req.body
+
+    const userData = await userModel.findById(userId)
+
+    const doctorData = await doctorModel.findById(docId).select('-password')
+
+    const slots_booked = doctorData.slots_booked    
+
+    // checking doctor availability status
+    if(!doctorData.available){
+        return errorJson(400, 'Doctor not available', res)
+    }
+
+    // checking if slot is available
+    if(slots_booked[slotDate]){
+        if(slots_booked[slotDate].includes(slotTime)){
+            return errorJson(400, 'Slots already occupied', res)
+        }else{
+            slots_booked[slotDate].push(slotTime)
+        }
+    }else{
+        slots_booked[slotDate] = []
+        slots_booked[slotDate].push(slotTime)
+    }
+
+    delete docData.slots_booked
+
+    const appointmentData = {
+        userId,
+        docId,
+        slotDate,
+        slotTime,
+        userData,
+        docData,
+        amount: doctorData.fee
+    }
+
+    const newAppointment = new appointmentModel(appointmentData)
+    await newAppointment.save()
+}
+
+const cancelappointment = async (req,res) => {
+    const userId = req.user.userId
+    const {appointmentId} = req.body
+
+    const appointmentData = await findById(appointmentId)
+
+    if(appointmentData.userId !== userId){
+        return errorJson(400, "Couldn't find appointment", res)
+    }
+
+    await appointmentModel.findByIdAndUpdate(appointmentId, {cancelled:true})
+
+    // updating doctor slot
+
+    const {docId, slotTime, slotDate} = appointmentData
+
+    const doctorData = await doctorModel.findById(docId).select('-password')
+
+    const slots_booked = doctorData.slots_booked
+
+    slots_booked[slotDate].filter(t => t !== slotTime)
+
+    await doctorModel.findByIdAndUpdate(docId, {slots_booked})
+
+    return res.json({success: true, message: 'Appointment booked successfully'})
+
+
+}
+
+export {getProfile, updateProfile, bookAppointment, cancelappointment}
