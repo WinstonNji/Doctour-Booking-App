@@ -29,7 +29,7 @@ const Doctors = () => {
 
   return (
     <div>
-      <p>Browse through the doctors specialists
+      <p className='font-semibold pt-4'>Browse through the doctors specialists
       </p>
 
       <div className='md:flex gap-12'>
@@ -72,7 +72,7 @@ const MediumScreenFilter = () => {
           
         })}
         <NavLink to='/doctors' >
-          <div className='pr-8 pl-3 py-1 ring-1 rounded-sm'>All Doctors</div>
+          <div className='pr-8 pl-3 py-1 ring-1 rounded-sm font-bold ring-primary'>Show All Doctors</div>
         </NavLink>
       </div>
 
@@ -101,7 +101,7 @@ const MobileScreenFilter = () => {
           )
         })}
         <NavLink to='/doctors' >
-          <div className='pl-2 pr-16 py-3 ring-1 rounded-sm'>All Doctors</div>
+          <div className='pl-2 pr-16 py-3 ring-1 rounded-sm  font-bold ring-primary'>Show All Doctors</div>
         </NavLink>
       </div>
       

@@ -25,4 +25,14 @@
   background-color: #E2E5FF;
 }
 
+/*  */
+a.active .sideBarNav {
+  box-sizing: border-box;
+  background-color: #919bf4;
+  border-right: 8px solid #5f6fff;
+  color: white;
+  font-weight: 400;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
 

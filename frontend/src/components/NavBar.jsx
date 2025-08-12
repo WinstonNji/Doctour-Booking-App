@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { assets } from '../assets/assets_admin/assets'
 import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 
 const NavBar = () => {
@@ -27,34 +28,7 @@ const MobileMenu = () => {
             <img className='w-38' src={assets.admin_logo} alt="" />            
 
             <div className='flex justify-center'>
-                <div className='relative'>
-                    <div className='group flex'>
-                        <img className='w-10' src={assets.upload_area} alt="" />
-                        <img className='w-4' src={assets.dropDown_icon} alt="" />
-
-                        
-                        <ul className='flex-col gap-2 p-2 hidden group-hover:flex absolute top-[42px] right-3 bg-gray-100 w-42 group'>
-                            <NavLink to='/my-profile'>
-                                <li className='hover:font-bold hover:text-primary'>
-                                    My Profile
-                                </li>
-                            </NavLink>
-
-                            <NavLink to='/my-appointments'>
-                                <li className='hover:font-bold hover:text-primary'>
-                                    My appointments
-                                </li>
-                            </NavLink>
-
-                            <NavLink>
-                                <li className='hover:font-bold hover:text-primary'>
-                                    Logout
-                                </li>
-                            </NavLink>
-                        </ul>
-                    
-                    </div>
-                </div>
+                <UserMenu />
                 
                 <img onClick={() => setMenuOpen(true)} className='w-10' src={assets.hamburgerMenu} alt="" />
 
@@ -107,7 +81,7 @@ const DesktopMenu = () => {
                         <li >HOME</li>
                     </NavLink>
                     <NavLink to='/doctors'  className='a'>
-                        <li>ALL DOCTORS</li>
+                        <li >ALL DOCTORS</li>
                     </NavLink>
                     <NavLink to='/about'  className='a'>
                         <li>ABOUT</li>
@@ -119,34 +93,49 @@ const DesktopMenu = () => {
             </div>
 
             {/* User Menu */}
-            <div className='group flex relative'>
-                <img className='w-10' src={assets.upload_area} alt="" />
-                <img className='w-4' src={assets.dropDown_icon} alt="" />
-
-                <div>
-                    <ul className='flex-col gap-2 p-2 hidden group-hover:flex absolute top-[42px] right-[10%] bg-gray-100 w-42 group'>
-                        <NavLink to='/my-profile'>
-                            <li className='hover:font-bold hover:text-primary'>
-                                My Profile
-                            </li>
-                        </NavLink>
-
-                        <NavLink to='/my-appointments'>
-                            <li className='hover:font-bold hover:text-primary'>
-                                My appointments
-                            </li>
-                        </NavLink>
-
-                        <NavLink>
-                            <li className='hover:font-bold hover:text-primary'>
-                                Logout
-                            </li>
-                        </NavLink>
-                    </ul>
-                </div>
-            </div>
+            <UserMenu />
         </div>
     </>)
+}
+
+const UserMenu = () => {
+
+    return (
+
+    <div className='group flex relative'>
+        <img className='w-10' src={assets.upload_area} alt="" />
+        <img className='w-4' src={assets.dropDown_icon} alt="" />
+
+        <div>
+            <ul className='flex-col gap-2 p-2 hidden group-hover:flex absolute top-[42px] right-[10%] bg-gray-100 w-42 group'>
+                <NavLink to='/my-profile'>
+                    <li className='hover:font-bold hover:text-primary'>
+                        My Profile
+                    </li>
+                </NavLink>
+
+                <NavLink to='/my-appointments'>
+                    <li className='hover:font-bold hover:text-primary'>
+                        My appointments
+                    </li>
+                </NavLink>
+
+                <NavLink>
+                    <li className='hover:font-bold hover:text-primary'>
+                        Logout
+                    </li>
+                </NavLink>
+
+                <NavLink to='/admin-dashboard'>
+                    <li className='hover:font-bold hover:text-primary'>
+                        Admin
+                    </li>
+                </NavLink>
+            </ul>
+        </div>
+    </div>
+
+    )
 }
 
 
