@@ -1,8 +1,11 @@
 import React from 'react'
 import { Route, Routes, useLocation } from 'react-router-dom'
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+// User Imports
 import Home from './pages/Home'
 import Doctors from './pages/Doctors'
-import Login from './pages/Login'
 import About from './pages/About'
 import Contact from './pages/Contact'
 import MyProfile from './pages/MyProfile'
@@ -11,8 +14,9 @@ import Appointment from './pages/Appointment'
 import NavBar from './components/NavBar'
 import Footer from './components/Footer'
 import Dashboard from './admin/pages/Dashboard'
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+
+// Protected Route
+import ProtectedRoutes from './components/ProtectedRoutes';
 
 
 // admin imports
@@ -21,16 +25,16 @@ import SideBar from './admin/components/SideBar'
 import Add_Doctor from './admin/pages/Add_Doctor'
 import All_Appointments from './admin/pages/All_Appointments'
 import All_Doctors from './admin/pages/All_Doctors'
-import AdminLogin from './admin/auth/AdminLogin'
+import Login from './auth/Login';
 
 
 const App = () => {
   const location = useLocation();
 
   const isAdminRoute = location.pathname.startsWith('/admin')
-
+  const isLogin = location.pathname.startsWith('/login')
   return (
-    <div className={`${!isAdminRoute ? 'mx-4 sm:mx-[10%]' : '' }`}>
+    <div className={`${!isAdminRoute && !isLogin ? 'mx-[10%] ' : 'overflow-x-hidden overflow-y-hidden' }`}>
       {!isAdminRoute && <NavBar></NavBar>}
 
       {isAdminRoute && <AdminNavbar /> }
@@ -39,6 +43,7 @@ const App = () => {
 
       <Routes>
         <Route path='/' element={<Home />} />
+        <Route path='/login' element={<Login  />} />
         <Route path='/doctors' element={<Doctors  />} />
         <Route path='/doctors/:speciality' element={<Doctors  />} />
         <Route path='/login' element={<Login  />} />
@@ -49,16 +54,18 @@ const App = () => {
         <Route path='/appointment/:docId' element={<Appointment  />} />
 
         {/* Admin Routes */}
-        <Route path='/admin-dashboard' element={<Dashboard />}></Route>
-        <Route />
-        <Route path='/admin-add-doctor' element={<Add_Doctor />}></Route>
-        <Route />
-        <Route path='/admin-appointments' element={<All_Appointments />} ></Route>
-        <Route path='/admin-doctor-list' element={<All_Doctors />}></Route>
-        <Route path='/admin-login' element={<AdminLogin />}></Route>
+        
+        <Route element={< ProtectedRoutes/>}>
+          <Route path='/admin-dashboard' element={<Dashboard />}></Route>
+          <Route path='/admin-add-doctor' element={<Add_Doctor />}></Route>
+          <Route path='/admin-appointments' element={<All_Appointments />} ></Route>
+          <Route path='/admin-doctor-list' element={<All_Doctors />}></Route>
+        </Route>
+
+        <Route path='/admin-login' element={<Login />}></Route>
       </Routes>
 
-      {!isAdminRoute && <Footer></Footer>}
+      {!isAdminRoute && !isLogin && <Footer></Footer>}
       <ToastContainer />
     </div>
   )

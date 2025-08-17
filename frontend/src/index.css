@@ -3,7 +3,8 @@
 @theme {
   --color-primary: #5f6fff;
   --breakpoint-tablet : 768px;
-  --color-secondary: #E2E5FF
+  --color-secondary: #E2E5FF;
+  --color-btnHover: #7C82FF;
 }
 
 .menuNav .a.active{
