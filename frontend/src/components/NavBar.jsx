@@ -1,16 +1,32 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { assets } from '../assets/assets_admin/assets'
-import { NavLink } from 'react-router-dom'
-import { Link } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
+import { MyGlobalContext } from '../context/GlobalContext'
+import { useContext } from 'react'
 
+let isLoginRoute = null
 
 const NavBar = () => {
+    const {userIsLoggedIn} = useContext(MyGlobalContext)
+
+    isLoginRoute = useLocation().pathname.startsWith('/login')
+
+    
 
     return (
         <>  
-        
+            
             < MobileMenu></MobileMenu>
             <DesktopMenu></DesktopMenu>
+            
+            <div className={`flex w-full justify-end ${isLoginRoute || userIsLoggedIn ? 'hidden' : 'null'}` }>
+                <NavLink to='/login'>
+                    <button className='bg-primary px-12 py-1 rounded-full mb-2 font-semibold text-white text-end hover:px-16 hover:bg-btnHover cursor-pointer transition-all duration-200'>Login</button>
+                </NavLink>
+                
+            </div>
+            
             
             <hr />
         </>
@@ -23,7 +39,7 @@ const MobileMenu = () => {
 
     return (
     <>
-        <div className='flex justify-between  py-4  relative md:hidden' >
+        <div className={`flex justify-between  py-4  relative md:hidden ${isLoginRoute ? 'px-14' : null}`} >
             
             <img className='w-38' src={assets.admin_logo} alt="" />            
 
@@ -68,7 +84,7 @@ const MobileMenu = () => {
 const DesktopMenu = () => {
     return (
     <>
-        <div className='hidden justify-between items-center p-4 md:flex' >
+        <div className={`hidden justify-between items-center p-4 md:flex  ${isLoginRoute ? 'px-24' : null}`} >
             {/* Image */}
                 
             <img className='w-48' src={assets.admin_logo} alt="" />
@@ -98,17 +114,25 @@ const DesktopMenu = () => {
     </>)
 }
 
+
+
 const UserMenu = () => {
+    const [profileImg, setProfileImg] = useState(null)
+
+    const {userIsLoggedIn, setUserLoginStatus, setToken, pfp} = useContext(MyGlobalContext)
+
+    const navigate = useNavigate()
+    const isLoginRoute = useLocation()
 
     return (
 
-    <div className='group flex relative'>
-        <img className='w-10' src={assets.upload_area} alt="" />
+    <div className={`group   relative ${userIsLoggedIn ? 'flex' : 'hidden' }`}>
+        <img className='w-10 rounded-full' src={pfp ? pfp : assets.upload_area} alt="" />
         <img className='w-4' src={assets.dropDown_icon} alt="" />
 
         <div>
             <ul className='flex-col gap-2 p-2 hidden group-hover:flex absolute top-[42px] right-[10%] bg-gray-100 w-42 group'>
-                <NavLink to='/my-profile'>
+                <NavLink className={`${!userIsLoggedIn ? 'hidden' : 'block'}`} to='/my-profile'>
                     <li className='hover:font-bold hover:text-primary'>
                         My Profile
                     </li>
@@ -120,8 +144,13 @@ const UserMenu = () => {
                     </li>
                 </NavLink>
 
-                <NavLink>
-                    <li className='hover:font-bold hover:text-primary'>
+                <NavLink to='/login' onClick={()=> {
+                    sessionStorage.removeItem('token')
+                    navigate('/login')
+                    setUserLoginStatus(false)
+                    setToken(null)
+                }} className={`${!userIsLoggedIn && isLoginRoute ? 'hidden' : 'block'}`}>
+                    <li className={`hover:font-bold hover:text-primary`}>
                         Logout
                     </li>
                 </NavLink>

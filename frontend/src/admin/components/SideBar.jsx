@@ -6,7 +6,6 @@ import { useLocation } from 'react-router-dom'
 function SideBar() {
 
     const isAdminLogin = useLocation().pathname.startsWith('/admin-login')
-    console.log(isAdminLogin)
 
 
   return (
