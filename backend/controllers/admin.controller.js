@@ -12,13 +12,11 @@ export const adminLogin = async (req,res) => {
         return res.status(400).json({success: false, message: "Please enter all fields"})
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10)
-
     if(email == process.env.ADMIN_EMAIL && password == process.env.ADMIN_PASSWORD){
-        const token =  jwt.sign({email}, process.env.JWT_SECRET, {expiresIn : "24h"} )
+        const token =  jwt.sign({email, role:'admin'}, process.env.JWT_SECRET, {expiresIn : "24h"} )
         return res.status(200).json({success: true, message: "Welcome Admin", token})
     }else{
-        return res.status(404).json({success: false, message: "Wrong credentials" })
+        return res.json({success: false, message: "Wrong credentials" })
     }
 }
 
@@ -31,16 +29,14 @@ export const addDoctor = async (req,res) => {
         const imageFile = req.file
 
         if(!name || !email || !password || !speciality || !degree ||  !experience || !about || !fee || !address || !imageFile){
-            return res.status(400).json({success : false, message : 'Enter all fields'})
+            return res.json({success : false, message : 'Enter all fields'})
         }
 
         if(!validator.isEmail(email)){
-            return res.status(400).json({success : false, message : 'Enter a valid email address'})
+            return res.json({success : false, message : 'Enter a valid email address'})
         }
 
         const hashedPassword = await bcrypt.hash(password, 10)
-
-        console.log(imageFile)
 
         const imageUpload = cloudinary.uploader.upload(imageFile.path, {resource_type : "image"})
         const imageUrl = (await imageUpload).secure_url

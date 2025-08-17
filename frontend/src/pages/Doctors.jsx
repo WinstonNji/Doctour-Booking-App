@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { specialityData } from '../assets/assets_frontend/assets'
 import { NavLink } from 'react-router-dom'
-import { doctors } from '../assets/assets_frontend/assets'
 import DoctorCard from '../components/DoctorCard'
 import { useParams } from 'react-router-dom'
+import { useContext } from 'react'
+import { MyGlobalContext } from '../context/GlobalContext'
 
 const Doctors = () => {
+
+  const {doctors} = useContext(MyGlobalContext)
 
   const {speciality} = useParams()
 
