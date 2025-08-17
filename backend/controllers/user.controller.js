@@ -18,7 +18,7 @@ export const userRegistration = async (req,res) => {
     const user = await userModel.findOne({email})
 
     if(user){
-        return res.status(400).json({success:false, message: "User already exists. Log-in instead"})
+        return res.json({success:false, message: "This User already exists. LogIn instead"})
     }
 
     if(!validator.isEmail(email)){
@@ -26,7 +26,7 @@ export const userRegistration = async (req,res) => {
     }
 
     if(password.length < 8){
-        return res.status(400).json({success:false, message: "Password needs to be longer than 8characters"})
+        return res.json({success:false, message: "Password needs to be longer than 8characters"})
     }
 
     const hashedPassword = await bcrypt.hash(password, 10)
@@ -58,22 +58,20 @@ export const userLogin = async (req,res) => {
         return res.status(400).json({success: false, message: "Please enter valid Credentials."})
     }
  
-    const token = jwt.sign({email, userId: user._id}, process.env.JWT_SECRET, {expiresIn: "30d"})
+    const token = jwt.sign({userId: user._id, role:"user"}, process.env.JWT_SECRET, {expiresIn: "30d"})
 
-    return res.status(200).json({success:true,token})
+    return res.status(200).json({success:true,token, message:'Successfully LoggedIn'})
 }
 
 // get profile
 const getProfile = async (req,res) => {
     const userId = req.user.userId
 
-    console.log(userId)
-
     if(!userId){
         return errorJson(res)
     }
 
-    const user = await userModel.findById(userId).select("-password")
+    const user = await userModel.findById(userId).select({password:0, _id:0})
 
     if(user){
         return res.status(200).json({success:true, user})
@@ -92,8 +90,6 @@ const updateProfile = async (req,res) => {
     const imageFile = req.file
 
     const userId = req.user.userId
-
-    console.log("userId:", userId )
 
     if(!name || !email) {
         return errorJson(400, 'Please enter a valid name and email', res)
@@ -137,10 +133,11 @@ const bookAppointment = async (req,res) => {
     const userId = req.user.userId
     const {docId, slotDate, slotTime} = req.body
 
-    const userData = await userModel.findById(userId)
+    const userData = await userModel.findById(userId).select('-password')
 
     const doctorData = await doctorModel.findById(docId).select('-password')
-
+    
+    console.log(doctorData.slots_booked)
     const slots_booked = doctorData.slots_booked    
 
     // checking doctor availability status
@@ -148,10 +145,11 @@ const bookAppointment = async (req,res) => {
         return errorJson(400, 'Doctor not available', res)
     }
 
+
     // checking if slot is available
     if(slots_booked[slotDate]){
         if(slots_booked[slotDate].includes(slotTime)){
-            return errorJson(400, 'Slots already occupied', res)
+            return errorJson(400, 'Slot already occupied', res)
         }else{
             slots_booked[slotDate].push(slotTime)
         }
@@ -160,7 +158,7 @@ const bookAppointment = async (req,res) => {
         slots_booked[slotDate].push(slotTime)
     }
 
-    delete docData.slots_booked
+   await doctorModel.findByIdAndUpdate(docId, {slots_booked})
 
     const appointmentData = {
         userId,
@@ -168,12 +166,14 @@ const bookAppointment = async (req,res) => {
         slotDate,
         slotTime,
         userData,
-        docData,
+        doctorData,
         amount: doctorData.fee
     }
 
     const newAppointment = new appointmentModel(appointmentData)
     await newAppointment.save()
+
+    return res.json({success:true, message: 'Appointment Booked Successfully'})
 }
 
 const cancelappointment = async (req,res) => {

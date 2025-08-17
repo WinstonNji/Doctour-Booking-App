@@ -21,7 +21,7 @@ const appointmentSchema = new mongoose.Schema({
         type : Object, 
         required: true
     },
-    docData : {
+    doctorData : {
         type : Object, 
         required: true
     },

@@ -4,10 +4,16 @@ import upload from "../middlewares/multer.js";
 import express from "express"
 import { authentificateAdmin } from "../middlewares/admin.authentification.js";
 
+
 const router = express.Router()
 
 router.post('/add-doctor', authentificateAdmin , upload.single('image'), addDoctor)
-router.post('/login', adminLogin)
+router.post('/admin-login', adminLogin)
+router.get('/admin-verification', authentificateAdmin, (req,res) => {
+        return res.status(200).json({success: true, message: 'Admin Verification Successful'})
+    
+})
+
 
 export default router
 

@@ -19,4 +19,10 @@ userRouter.post('/book-appointment', userAuthentificationMiddleware, bookAppoint
 
 userRouter.post('/cancel-appontment', userAuthentificationMiddleware, cancelappointment)
 
+userRouter.get('/verify-user', userAuthentificationMiddleware, (req,res)=> {
+    const {role} = req.user
+    if(role === "user") return res.json({success:true})
+    
+})
+
 export default userRouter
