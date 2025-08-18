@@ -7,51 +7,30 @@ export const MyGlobalContext = createContext()
 
 function GlobalContext({children}) {
 
-    const [token, setToken] = useState(sessionStorage.getItem('token') ? sessionStorage.getItem('token') : null )
-
+    const [token, setToken] = useState(sessionStorage.getItem('token') ? sessionStorage.getItem('token') : '' )
     const [doctors, setDoctors] = useState([])
-
     const [userIsLoggedIn, setUserLoginStatus] = useState(false)
-
     const [pfp, setPfp] = useState(null)
-    
     const [userData, setUserData] = useState({
-    name: "Winnie",
+    name: "",
     image: assets.upload_area,
-    email: 'winston55@gmail.com',
-    phone: "+250 123 456 789",
+    email: "",
+    phone: "+",
     address: { 
-        line1: "57th Cross, RichMond",
-        line2: "Circle, Church Road, London" 
+        line1: "",
+        line2: "" 
     },
-    gender: "Male",
-    dob: '2000-01-20' 
+    gender: "",
+    dob: ""
     })
 
-    const fetchAllDoctors = async () => {
-        console.log('called') 
-      try {
-          // endpoint
-          const endpoint = `${values.generalUrl}` + '/getAllDoctors'
-
-          // headers
-          const headers = {
-              Authorization : `Bearer ${token}`
-          }
-
-          const response = await axios.get(endpoint, {headers})
-
-          setDoctors(response.data.doctors)
-          
-      } catch (error) {
-                
-      }
-  }
+    
 
   const values = {
         adminBackendUrl : 'http://localhost:4000/api/admin',
         generalUrl : 'http://localhost:4000/api/doctourApp/general',
         clientUrl : 'http://localhost:4000/api/user',
+        appointmentUrl : 'http://localhost:4000/api/appointment',
         token,
         setToken,
         doctors,
@@ -60,23 +39,43 @@ function GlobalContext({children}) {
         setPfp,
         pfp,
         userData,
-        fetchAllDoctors
+        setUserData,
   }
 
-  
-
   useEffect(() => {
-      fetchAllDoctors()
+    const fetchAllDoctors = async () => {
+            console.log('called') 
+        try {
+            // endpoint
+            const endpoint = `${values.generalUrl}` + '/getAllDoctors'
+
+            // headers
+            const headers = {
+                Authorization : `Bearer ${token}`
+            }
+
+            const response = await axios.get(endpoint, {headers})
+
+            setDoctors(response.data.doctors)
+            
+        } catch (error) {
+                    
+        }
+    }
+
+        fetchAllDoctors()
   }, [])
 
   useEffect(() => {
     const validateUser = async ()=> {
-        if(!token) setUserLoginStatus(false)
-        
+        if(!token){
+            setUserLoginStatus(false)
+            return
+        } 
         const endpoint = values.clientUrl + '/verify-user'
 
         const headers = {
-            Authorization : `Bearer ${token ? token :null}`
+            Authorization : `Bearer ${token}`
         }
         try {
             const response = await axios.get(endpoint, {headers})

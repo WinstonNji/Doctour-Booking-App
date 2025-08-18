@@ -5,11 +5,12 @@ import axios from 'axios'
 import { MyGlobalContext } from '../context/GlobalContext'
 import { useContext } from 'react'
 import { toast } from 'react-toastify'
-
+ 
 
 const MyProfile = () => {
 
-  const {clientUrl, token, setPfp, userData} = useContext(MyGlobalContext)
+  const {clientUrl, token, setPfp, userData, setUserData} = useContext(MyGlobalContext)
+
 
   const [isEditOn, setEdit] = useState(false)
   const [imageUrl, setImageUrl] = useState(false)
