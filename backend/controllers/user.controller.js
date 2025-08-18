@@ -44,18 +44,18 @@ export const userLogin = async (req,res) => {
     const {email, password} = req.body
 
     if(!email || !password){
-        return res.status(400).json({success:false,message: "Enter all fields"})
+        return res.json({success:false,message: "Enter all fields"})
     }
 
     const user = await userModel.findOne({email})
 
     if(!user){
-        return res.status(400).json({success: false, message: "Couldn't find user. Register instead"})
+        return res.json({success: false, message: "Couldn't find user. Register instead"})
     }
 
     const isMatch = await bcrypt.compare(password, user.password)
     if(!isMatch){
-        return res.status(400).json({success: false, message: "Please enter valid Credentials."})
+        return res.json({success: false, message: "Please enter valid Credentials."})
     }
  
     const token = jwt.sign({userId: user._id, role:"user"}, process.env.JWT_SECRET, {expiresIn: "30d"})
