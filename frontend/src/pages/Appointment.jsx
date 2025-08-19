@@ -18,7 +18,7 @@ const Appointment = () => {
   const [selectedTime, setSelectedTime] = useState('') // Changed from null to empty string
   
   const maxDateObj = new Date()
-  maxDateObj.setDate(maxDateObj.getDate() + 14) 
+  maxDateObj.setDate(maxDateObj.getDate() + 30) 
   const maxDate = maxDateObj.toISOString().split("T")[0]
   
   const alltimeSlots = [
@@ -104,11 +104,11 @@ const Appointment = () => {
         return updated
       })
       
-      setSelectedTime('') // Reset only the time, keep the date
+      setSelectedTime('') 
       
     } catch (error) {
       console.error(error)
-      toast.error('Time selected Invalid')
+      toast.error('An error Occured')
     }
   }
 
@@ -121,7 +121,7 @@ const Appointment = () => {
         return doctor
       }
     }))
-  }, [docId, doctors])
+  }, [docId])
 
   // Reset selected time when date changes
   const handleDateChange = (e) => {
@@ -156,7 +156,7 @@ const Appointment = () => {
               </div>
               
               <p className='text-gray-600'>{doctor?.about}</p>
-              <p className='font-semibold'>Appointment: ${doctor?.fees}</p>
+              <p className='font-semibold'>Appointment: ${doctor?.fee}</p>
             </div>
           </div>
         

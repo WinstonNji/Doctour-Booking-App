@@ -61,7 +61,7 @@ const MobileMenu = () => {
                                 <li onClick={()=> setMenuOpen(false)} >HOME</li>
                             </NavLink>
                             <NavLink to='/doctors'  className='a'>
-                                <li onClick={()=> setMenuOpen(false)}>ALL DOCTORS</li>
+                                <li onClick={()=> setMenuOpen(false)}>DOCTORS</li>
                             </NavLink>
                             <NavLink to='/about'  className='a'>
                                 <li onClick={()=> setMenuOpen(false)}>ABOUT</li>
@@ -97,7 +97,7 @@ const DesktopMenu = () => {
                         <li >HOME</li>
                     </NavLink>
                     <NavLink to='/doctors'  className='a'>
-                        <li >ALL DOCTORS</li>
+                        <li >DOCTORS</li>
                     </NavLink>
                     <NavLink to='/about'  className='a'>
                         <li>ABOUT</li>

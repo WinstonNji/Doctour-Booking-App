@@ -15,34 +15,16 @@ function GlobalContext({children}) {
     name: "",
     image: assets.upload_area,
     email: "",
-    phone: "+",
+    phone: "",
     address: { 
         line1: "",
         line2: "" 
     },
-    gender: "",
+    gender: "Not yet specified",
     dob: ""
     })
+    const [appointmentData, setAppointmentData] = useState([])
 
-    
-
-  const values = {
-        adminBackendUrl : 'http://localhost:4000/api/admin',
-        generalUrl : 'http://localhost:4000/api/doctourApp/general',
-        clientUrl : 'http://localhost:4000/api/user',
-        appointmentUrl : 'http://localhost:4000/api/appointment',
-        token,
-        setToken,
-        doctors,
-        userIsLoggedIn,
-        setUserLoginStatus,
-        setPfp,
-        pfp,
-        userData,
-        setUserData,
-  }
-
-  useEffect(() => {
     const fetchAllDoctors = async () => {
             console.log('called') 
         try {
@@ -61,9 +43,59 @@ function GlobalContext({children}) {
         } catch (error) {
                     
         }
+    } 
+
+    const formatDate = (slotDate) => {
+        const dateObj = new Date(slotDate)
+        const day = dateObj.getDate()
+        const month = dateObj.toLocaleString('en-US', { month: 'long' })
+        const year = dateObj.getFullYear()
+        return `${day} ${month} ${year}`
+    } 
+
+    const values = {
+        // Urls
+        adminBackendUrl : 'http://localhost:4000/api/admin',
+        generalUrl : 'http://localhost:4000/api/doctourApp/general',
+        clientUrl : 'http://localhost:4000/api/user',
+        appointmentUrl : 'http://localhost:4000/api/appointment',
+
+        // Token
+        token,
+        setToken,
+
+        // doctor
+        doctors,
+        fetchAllDoctors,
+
+        // User
+        userIsLoggedIn,
+        setUserLoginStatus,
+        setPfp,
+        pfp,
+        userData,
+        setUserData,
+
+        // Appointments
+        formatDate,
+        fetchAllAppointments,
+        appointmentData
+  }
+
+    async function fetchAllAppointments(){
+        const endPoint = values.appointmentUrl + '/all-appointments'
+        const headers = {
+            Authorization : `Bearer ${values.token}`
+        }
+        const response = await axios.get(endPoint, {headers})
+
+        setAppointmentData(response.data.appointments)
     }
 
-        fetchAllDoctors()
+  
+
+  useEffect(() => {
+    fetchAllDoctors()
   }, [])
 
   useEffect(() => {

@@ -37,18 +37,14 @@ const MyProfile = () => {
       formData.append('gender', userData.gender)
       formData.append('dob', userData.dob)
       formData.append('phone', userData.phone)
-      formData.append('image', imageUrl)
-
-      console.log(imageUrl, '----imageUrl')
-
-      
+      formData.append('image', imageUrl)     
       
 
       try {
         const response =  await axios.patch(endpoint, formData, {headers})
         
         if(response.data.success){
-          const previewUrl = imageUrl ? URL.createObjectURL(imageUrl) : userData.image
+          const previewUrl = imageUrl ? URL.createObjectURL(imageUrl) : userData?.image
           console.log(previewUrl)
           setPfp(previewUrl)
           toast.success(response.data.message)
@@ -67,7 +63,7 @@ const MyProfile = () => {
   return (
     <div className='md:w-1/2 h-full'>
       <div className='mt-8'>
-        <img className='p-4 rounded-2xl w-60' src={imageUrl ? URL.createObjectURL(imageUrl) : userData.image} alt="" />
+        <img className='p-4 rounded-full w-60' src={imageUrl ? URL.createObjectURL(imageUrl) : userData?.image} alt="" />
 
         {isEditOn && (
           <div>
@@ -79,9 +75,9 @@ const MyProfile = () => {
         
         {isEditOn ? 
           (
-            <input type="text" className='mt-4 ring px-2' value={userData.name} onChange={e => setUserData(prev => ({...prev, name:e.target.value}))} />
+            <input type="text" className='mt-4 ring px-2' value={userData?.name} onChange={e => setUserData(prev => ({...prev, name:e.target.value}))} />
           ) : (
-            <h1 className='font-bold text-2xl mt-4'>{userData.name}</h1>
+            <h1 className='font-bold text-2xl mt-4'>{userData?.name}</h1>
           )}
         
       </div>
@@ -93,16 +89,16 @@ const MyProfile = () => {
         <div className='mt-2'>
           <div className='flex justify-between'>
             <p className='font-semibold'>Email id:</p>
-            <p className='text-blue-400 font-medium'>{userData.email}</p>
+            <p className='text-blue-400 font-medium'>{userData?.email}</p>
           </div>
 
           <div className='flex justify-between'>
             <p className='font-semibold'>Phone</p>
             {isEditOn ? 
               (
-                <input  type="text" className='ring px-2' value={userData.phone} onChange={e => setUserData(prev => ({...prev, phone:e.target.value}))} />
+                <input  type="text" className='ring px-2' value={userData?.phone} onChange={e => setUserData(prev => ({...prev, phone:e.target.value}))} />
               ) : (
-                <p className='font-medium text-blue-400'>{userData.phone}</p>
+                <p className='font-medium text-blue-400'>{userData?.phone}</p>
               )
             }
             
@@ -117,13 +113,13 @@ const MyProfile = () => {
                   <>
                       <input 
                         type="text" 
-                        value={userData.address.line1}
+                        value={userData?.address.line1}
                         onChange={(e) => setUserData((prev) => ({...prev, address : {...prev.address, line1: e.target.value} }) )}
                         className='ring mt-2'
                       />
                       <input 
                         type="text" 
-                        value={userData.address.line2} 
+                        value={userData?.address.line2} 
                         onChange={(e) => setUserData((prev) => ({...prev, address : {...prev.address, line2: e.target.value} }) )}
                       className='ring mt-2'
                       />
@@ -131,8 +127,8 @@ const MyProfile = () => {
                   
                 ) : (
                   <>
-                    <p className='text-end'>{userData.address.line1}</p>
-                    <p>{userData.address.line2}</p>
+                    <p className='text-end'>{userData?.address.line1}</p>
+                    <p>{userData?.address.line2}</p>
                   </> 
                   
                 )
@@ -151,7 +147,7 @@ const MyProfile = () => {
               {isEditOn ? 
                 (
                   <select 
-                    onChange={(e) => setUserData(prev => ({...prev, gender: e.target.value}))} value={userData.gender} 
+                    onChange={(e) => setUserData(prev => ({...prev, gender: e.target.value}))} value={userData?.gender} 
                     name="" 
                     id=""
                     className='ring ml-2 py-2'
@@ -161,7 +157,7 @@ const MyProfile = () => {
                     <option value="Female">Female</option>
                   </select>
                 ) : (
-                  <p className='px-3'>{userData.gender}</p>
+                  <p className='px-3'>{userData?.gender}</p>
                 )
               }
               
@@ -173,12 +169,12 @@ const MyProfile = () => {
                 (
                   <input 
                     type="date" 
-                    value={userData.dob} 
+                    value={userData?.dob} 
                     onChange={e => setUserData(prev => ({...prev, dob:e.target.value}))} 
                     className='ring px-2 ml-2 py-2'/>
                   
                 ) : (
-                  <p className='font-medium text-blue-400 px-3'>{userData.dob}</p>
+                  <p className='font-medium text-blue-400 px-3'>{userData?.dob}</p>
                 )
             }
             </div>

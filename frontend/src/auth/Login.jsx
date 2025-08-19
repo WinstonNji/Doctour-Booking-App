@@ -10,6 +10,7 @@ function Login() {
   const {adminBackendUrl, setToken, clientUrl, setUserLoginStatus} = useContext
   (MyGlobalContext)
 
+
   const navigate = useNavigate()
   const isLogin = useLocation().pathname.startsWith('/login')
  
@@ -66,7 +67,7 @@ function Login() {
         setToken(response.data.token)
         setEmail('')
         setPassword('')
-        isLogin ? navigate('/') : navigate('/admin-dashboard')
+        isLogin ? navigate('/my-profile') : navigate('/admin-dashboard')
       }
     } catch (error) {
       // console.error(error)
