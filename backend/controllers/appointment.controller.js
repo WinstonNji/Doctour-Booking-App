@@ -6,13 +6,15 @@ const getMyAppointments = async (req, res) => {
 
     try {
         const appointments = await appointmentModel
-            .find({ userId })
+            .find({ userId, cancelled: false })
             .populate({
                 path: "doctorData",
                 select : "name speciality image"
             })
-            .select("doctorData amount slotDate slotTime _id")
+            .select("doctorData amount slotDate slotTime _id cancelled payment isCompleted docId")
             .sort({ createdAt: -1 });
+        
+      
 
         if (!appointments || appointments.length === 0) {
             return res.json({ success: false, message: "No appointments found" });
@@ -25,4 +27,23 @@ const getMyAppointments = async (req, res) => {
     }
 }
 
-export { getMyAppointments };
+const getAllAppointments = async (req, res) => {
+    const appointments = await appointmentModel
+        .find({})
+        .populate({
+            path: "doctorData",
+            select: "speciality image fee name"
+        })
+        .populate({
+            path: "userData",
+            select: "name image gender"
+        })
+        .select("doctorData userData slotTime slotDate cancelled isCompleted payment")
+        .sort({createdAt : -1})
+    
+    if(appointments.length === 0) return res.json({success: false, message: "Couldn't find any appointments"})
+
+    return res.json({success: false, appointments})
+}
+
+export { getMyAppointments, getAllAppointments };

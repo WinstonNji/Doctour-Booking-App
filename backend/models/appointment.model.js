@@ -33,15 +33,15 @@ const appointmentSchema = new mongoose.Schema({
     },
     cancelled : {
         type : Boolean, 
-        defailt: false
+        default: false
     },
     payment : {
         type : Boolean, 
-        default: true
+        default: false
     },
     isCompleted : {
         type : Boolean, 
-        defaule: false
+        default: false
     },    
 
 },{timestamps: true})
