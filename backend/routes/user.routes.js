@@ -17,7 +17,7 @@ userRouter.patch('/update-user' , userAuthentificationMiddleware, upload.single(
 
 userRouter.post('/book-appointment', userAuthentificationMiddleware, bookAppointment )
 
-userRouter.post('/cancel-appontment', userAuthentificationMiddleware, cancelappointment)
+userRouter.post('/cancel-appointment', userAuthentificationMiddleware, cancelappointment)
 
 userRouter.get('/verify-user', userAuthentificationMiddleware, (req,res)=> {
     const {role} = req.user

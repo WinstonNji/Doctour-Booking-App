@@ -137,12 +137,35 @@ const bookAppointment = async (req,res) => {
 
     const doctorData = await doctorModel.findById(docId).select('-password')
     
-    console.log(doctorData.slots_booked)
     const slots_booked = doctorData.slots_booked    
 
     // checking doctor availability status
     if(!doctorData.available){
         return errorJson(400, 'Doctor not available', res)
+    }
+
+
+    // Check if user already has an appointment matching that date and time
+    const appointments = await appointmentModel.find({userId:userId}).sort({createdAt : -1})
+
+
+    const appointmentObject = {}
+
+    for (let appointment of appointments) {
+        if (!appointment.cancelled) {  
+            if (appointmentObject[appointment.slotDate]) {
+                appointmentObject[appointment.slotDate].push(appointment.slotTime)
+            } else {
+                appointmentObject[appointment.slotDate] = []
+                appointmentObject[appointment.slotDate].push(appointment.slotTime)
+            }
+        }
+    }
+
+    if(appointmentObject[slotDate]){
+        if(appointmentObject[slotDate].includes(slotTime)){
+            return res.json({success:false, message:'You already have an appointment at this date and time'} )
+        }
     }
 
 
@@ -178,9 +201,10 @@ const bookAppointment = async (req,res) => {
 
 const cancelappointment = async (req,res) => {
     const userId = req.user.userId
+    
     const {appointmentId} = req.body
 
-    const appointmentData = await findById(appointmentId)
+    const appointmentData = await appointmentModel.findById(appointmentId)
 
     if(appointmentData.userId !== userId){
         return errorJson(400, "Couldn't find appointment", res)
@@ -194,15 +218,19 @@ const cancelappointment = async (req,res) => {
 
     const doctorData = await doctorModel.findById(docId).select('-password')
 
-    const slots_booked = doctorData.slots_booked
+    let slots_booked = doctorData.slots_booked
 
-    slots_booked[slotDate].filter(t => t !== slotTime)
+    slots_booked[slotDate] = slots_booked[slotDate].filter(t => {
+        if(t !== slotTime){
+            return true
+        }else{
+            false
+        }
+    })
 
     await doctorModel.findByIdAndUpdate(docId, {slots_booked})
 
-    return res.json({success: true, message: 'Appointment booked successfully'})
-
-
+    return res.json({success: true, message: 'Appointment cancelled successfully'})
 }
 
 export {getProfile, updateProfile, bookAppointment, cancelappointment}
