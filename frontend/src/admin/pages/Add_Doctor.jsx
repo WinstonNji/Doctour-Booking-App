@@ -5,7 +5,7 @@ import axios from 'axios'
 import { toast } from 'react-toastify'
 import { MyGlobalContext } from '../../context/GlobalContext'
 import { useContext } from 'react'
-import { useNavigate } from 'react-router-dom'
+
 
 function Add_Doctor() {
   const {adminBackendUrl, token} = useContext(MyGlobalContext)
@@ -89,18 +89,19 @@ function Add_Doctor() {
   }
 
   return (
-    <div className='ml-48 pt-24 pl-6 h-screen bg-gray-50'>
+    <div className='ml-48 pt-24 pl-6 h-fit bg-gray-50'>
       <p className='font-bold'>Add Doctor</p>
 
       <form onSubmit={addDoctor} action="" className='bg-white px-8 py-4 lg:w-[60%] mt-4'>
         <div className='flex gap-2 items-center pb-6'>
           <img className='w-14' src={imageFile? URL.createObjectURL(imageFile) : 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/510px-Default_pfp.svg.png?20220226140232'} alt="" />
 
-          <label className='ring hover:px-8 hover:py-2 px-4 ring-gray-400 rounded-md hover:bg-primary transition-all ease-in-out duration-200 hover:text-white hover:ring-0 hover:cursor-pointer' htmlFor="uploadImg">Upload Doctor Image</label>
+          <label className='ring hover:px-8 hover:py-2 px-4 ring-gray-400 rounded-md hover:bg-primary transition-all ease-in-out duration-200 hover:text-white hover:ring-0 hover:cursor-pointer' htmlFor="uploadImg">{imageFile ? 'Change Image' :  'Upload Doctor Image'}</label>
 
           <input 
             type="file" id='uploadImg' 
             name="image"  
+            className='hidden'
             required
             onChange={(e) => setImg(e.target.files[0])}
             
