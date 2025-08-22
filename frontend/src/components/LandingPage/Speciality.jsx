@@ -12,7 +12,7 @@ const Speciality = () => {
         <div className='flex overflow-x-auto  max-w-11/12 md:max-w-fit   items-center gap-6'>
             {specialityData.map((speciality, index) => {
                 return (
-                    <Link to={`/doctors/${speciality.speciality}`}>
+                    <Link key={index} to={`/doctors/${speciality.speciality}`}>
                         <div className='flex flex-col items-center hover:-translate-y-2 transition-transform duration-150 ease-in-out' key={index}>
                             <img className='max-w-20 md:max-w-28' src={speciality.image} alt="" />
                             <div>
