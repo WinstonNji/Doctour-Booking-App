@@ -13,6 +13,8 @@ import earning_icon from './earning_icon.svg'
 import patients_icon from './patients_icon.svg'
 import dropDown_icon from './dropdown-arrow-svgrepo-com.svg'
 import hamburgerMenu from './hamburgerMenu.svg'
+import filter_icon from './filter-svgrepo-com.svg'
+import dropUp_icon from './arrow-drop-up-svgrepo-com.svg'
 
 export const assets = {
     add_icon,
@@ -29,5 +31,7 @@ export const assets = {
     appointments_icon,
     earning_icon,
     dropDown_icon,
-    hamburgerMenu
+    dropUp_icon,
+    hamburgerMenu,
+    filter_icon
 }

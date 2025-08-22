@@ -11,7 +11,7 @@ function AdminNavbar() {
   function AdminLogout (){
     console.log('clicked')
     
-    sessionStorage.removeItem('token')
+    localStorage.removeItem('token')
     navigate('/')
     window.location.reload()
   }
