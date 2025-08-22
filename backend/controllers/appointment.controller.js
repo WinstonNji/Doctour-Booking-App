@@ -2,11 +2,13 @@ import appointmentModel from "../models/appointment.model.js"
 
 const getMyAppointments = async (req, res) => {
     const {userId} = req.user
+
+    console.log("Fetching appointments for user:", userId)
     
 
     try {
         const appointments = await appointmentModel
-            .find({ userId, cancelled: false })
+            .find({userId})
             .populate({
                 path: "doctorData",
                 select : "name speciality image"
@@ -14,6 +16,7 @@ const getMyAppointments = async (req, res) => {
             .select("doctorData amount slotDate slotTime _id cancelled payment isCompleted docId")
             .sort({ createdAt: -1 });
         
+        console.log("Fetched appointments:", appointments);
       
 
         if (!appointments || appointments.length === 0) {
@@ -28,6 +31,12 @@ const getMyAppointments = async (req, res) => {
 }
 
 const getAllAppointments = async (req, res) => {
+    const {role} = req.user
+
+    if(role !== "admin"){
+        return res.json({success: false, message: "Access Denied"})
+    }
+
     const appointments = await appointmentModel
         .find({})
         .populate({
@@ -43,7 +52,7 @@ const getAllAppointments = async (req, res) => {
     
     if(appointments.length === 0) return res.json({success: false, message: "Couldn't find any appointments"})
 
-    return res.json({success: false, appointments})
+    return res.json({success:true, appointments})
 }
 
 export { getMyAppointments, getAllAppointments };

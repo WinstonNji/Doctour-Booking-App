@@ -10,10 +10,15 @@ export const authentificateAdmin = (req,res, next) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
 
+
     if(decoded.role !== 'admin'){
         return res.json({success:false, message: 'Access Denied. Admins Only.'})
-    }else{
-        next()
     }
     
+    req.user = {
+        role : decoded.role
+    }
+    
+    next()
+        
 }

@@ -2,11 +2,12 @@ import express from 'express';
 const appointmentRouter = express.Router();
 
 import { getMyAppointments, getAllAppointments } from '../controllers/appointment.controller.js'
-import userAuthentificationMiddleware from '../middlewares/user.authMiddleware.js';
-import { authentificateAdmin } from '../middlewares/admin.authentification.js';
+// import userAuthentificationMiddleware from '../middlewares/user.authMiddleware.js';
+import { authMiddleware } from '../middlewares/authMiddleware.js';
+// import { authentificateAdmin } from '../middlewares/admin.authentification.js';
 
-appointmentRouter.get('/my-appointments', userAuthentificationMiddleware, getMyAppointments);
+appointmentRouter.get('/my-appointments', authMiddleware, getMyAppointments);
 
-appointmentRouter.get('/all-appointments', authentificateAdmin, getAllAppointments)
+appointmentRouter.get('/all-appointments', authMiddleware, getAllAppointments)
 
 export default appointmentRouter;

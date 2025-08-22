@@ -8,6 +8,7 @@ import userRouter from "./routes/user.routes.js";
 import doctorRouter from "./routes/doctour.routes.js";
 import generalRoute  from "./routes/general.js";
 import appointmentRouter from "./routes/appointment.routes.js";
+import { paymentRouter } from "./routes/payment.router.js";
 // app config
 const app = express()
 const port = process.env.PORT || 4000
@@ -32,6 +33,7 @@ app.use('/api/user' , userRouter )
 app.use('/api/doctor', doctorRouter)
 app.use('/api/doctourApp/general', generalRoute )
 app.use('/api/appointment', appointmentRouter)
+app.use('/api/payments', paymentRouter)
 
 app.listen(port, ()=> {
     console.log('app started')

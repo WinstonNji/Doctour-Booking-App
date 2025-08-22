@@ -67,6 +67,8 @@ export const userLogin = async (req,res) => {
 const getProfile = async (req,res) => {
     const userId = req.user.userId
 
+    console.log(userId)
+
     if(!userId){
         return errorJson(res)
     }
@@ -200,14 +202,24 @@ const bookAppointment = async (req,res) => {
 }
 
 const cancelappointment = async (req,res) => {
-    const userId = req.user.userId
+    const {role} = req.user
+
+    if(role !== 'admin' && role !== 'user'){
+        return res.json({success:false, message: "Access Denied"})
+    }
     
     const {appointmentId} = req.body
 
+
+    console.log(appointmentId, '-----appointmentId')
+
     const appointmentData = await appointmentModel.findById(appointmentId)
 
-    if(appointmentData.userId !== userId){
-        return errorJson(400, "Couldn't find appointment", res)
+    if(appointmentData.payment){
+        return res.json({
+            success: false,
+            message: 'Paid appointments cannot be cancelled'
+        })
     }
 
     await appointmentModel.findByIdAndUpdate(appointmentId, {cancelled:true})

@@ -22,7 +22,10 @@ export const doctorLogin = async (req, res) => {
         return errorJson(400, "Password or Email invalid. Please check credentials", res)
     }
 
-    const token = jwt.sign({email, doctorId:doctor._id}, process.env.JWT_SECRET, {expiresIn: "24h"})
+    const token = jwt.sign({
+        role:'doctor', 
+        userId:doctor._id
+    }, process.env.JWT_SECRET, {expiresIn: "24h"})
 
     return res.status(200).json({success: true, message: `Welcome ${doctor.name}`, token})
 }

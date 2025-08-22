@@ -13,7 +13,7 @@ export const adminLogin = async (req,res) => {
     }
 
     if(email == process.env.ADMIN_EMAIL && password == process.env.ADMIN_PASSWORD){
-        const token =  jwt.sign({email, role:'admin'}, process.env.JWT_SECRET, {expiresIn : "24h"} )
+        const token =  jwt.sign({role:'admin'}, process.env.JWT_SECRET, {expiresIn : "2h"} )
         return res.status(200).json({success: true, message: "Welcome Admin", token})
     }else{
         return res.json({success: false, message: "Wrong credentials" })
@@ -22,6 +22,12 @@ export const adminLogin = async (req,res) => {
 
 // Api to add doctour
 export const addDoctor = async (req,res) => {
+
+    const {role} = req.user
+
+    if(role !== 'admin'){
+        return res.json({success: false, message: 'Access Denied'})
+    }
 
     try {
         const {name, email, password, speciality, degree, experience, about , fee, address} = req.body
