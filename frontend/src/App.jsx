@@ -14,6 +14,7 @@ import Appointment from './pages/Appointment'
 import NavBar from './components/NavBar'
 import Footer from './components/Footer'
 import Dashboard from './admin/pages/Dashboard'
+import Verification from './pages/Verification'
 
 // Protected Route
 import ProtectedRoutes from './components/ProtectedRoutes';
@@ -33,9 +34,10 @@ const App = () => {
 
   const isAdminRoute = location.pathname.startsWith('/admin')
   const isLogin = location.pathname.startsWith('/login')
+  const isVerificationPage = location.pathname.startsWith('/verify')
   return (
-    <div className={`${!isAdminRoute && !isLogin ? 'mx-[10%] ' : 'overflow-x-hidden overflow-y-hidden' }`}>
-      {!isAdminRoute && <NavBar></NavBar>}
+    <div className={`${!isAdminRoute && !isLogin && !isVerificationPage ? 'mx-[10%] ' : 'overflow-x-hidden overflow-y-hidden' }`}>
+      {!isAdminRoute && !isVerificationPage && <NavBar></NavBar>}
 
       {isAdminRoute && <AdminNavbar /> }
       {isAdminRoute && <SideBar /> }
@@ -52,7 +54,7 @@ const App = () => {
         <Route path='/my-profile' element={<MyProfile  />} />
         <Route path='/my-appointments' element={<MyAppointments  />} />
         <Route path='/appointment/:docId' element={<Appointment  />} />
-
+        <Route path='/verify' element={<Verification />}/>
         {/* Admin Routes */}
         
         <Route element={< ProtectedRoutes/>}>
@@ -65,7 +67,7 @@ const App = () => {
         <Route path='/admin-login' element={<Login />}></Route>
       </Routes>
 
-      {!isAdminRoute && !isLogin && <Footer></Footer>}
+      {!isAdminRoute && !isLogin && !isVerificationPage && <Footer></Footer>}
       <ToastContainer />
     </div>
   )

@@ -24,7 +24,7 @@ function ProtectedRoutes() {
 
                 if(response.data.success){
                     setIsVerified(true)
-                    setToken(sessionStorage.getItem('token'))
+                    setToken(localStorage.getItem('token'))
                 }else{
                     navigate('/admin-login')
                     return 

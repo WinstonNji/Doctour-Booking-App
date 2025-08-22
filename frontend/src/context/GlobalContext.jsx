@@ -7,7 +7,7 @@ export const MyGlobalContext = createContext()
 
 function GlobalContext({children}) {
 
-    const [token, setToken] = useState(sessionStorage.getItem('token') ? sessionStorage.getItem('token') : '' )
+    const [token, setToken] = useState(localStorage.getItem('token') ? localStorage.getItem('token') : '' )
     const [doctors, setDoctors] = useState([])
     const [userIsLoggedIn, setUserLoginStatus] = useState(false)
     const [pfp, setPfp] = useState(null)
@@ -59,7 +59,7 @@ function GlobalContext({children}) {
         generalUrl : 'http://localhost:4000/api/doctourApp/general',
         clientUrl : 'http://localhost:4000/api/user',
         appointmentUrl : 'http://localhost:4000/api/appointment',
-
+        paymentUrl : 'http://localhost:4000/api/payments',
         // Token
         token,
         setToken,
@@ -111,7 +111,6 @@ function GlobalContext({children}) {
         }
         try {
             const response = await axios.get(endpoint, {headers})
-            console.log(response)
             if(response.data.success){
                 setUserLoginStatus(true)
             }
@@ -131,7 +130,7 @@ useEffect(() => {
         }
         const response = await axios.get(endpoint, {headers})
         setUserData(response.data.user)
-        setPfp(response.data.user.image)
+        setPfp(response.data.user?.image)
     }
 
     fetchProfile()

@@ -145,10 +145,10 @@ const UserMenu = () => {
                 </NavLink>
 
                 <NavLink to='/login' onClick={()=> {
-                    sessionStorage.removeItem('token')
+                    localStorage.removeItem('token')
                     navigate('/login')
                     setUserLoginStatus(false)
-                    setToken(null)
+                    setToken('')
                 }} className={`${!userIsLoggedIn && isLoginRoute ? 'hidden' : 'block'}`}>
                     <li className={`hover:font-bold hover:text-primary`}>
                         Logout

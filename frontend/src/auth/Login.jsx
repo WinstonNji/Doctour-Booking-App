@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { use, useContext, useEffect, useState } from 'react'
 import { MyGlobalContext } from '../context/GlobalContext'
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -10,9 +10,19 @@ function Login() {
   const {adminBackendUrl, setToken, clientUrl, setUserLoginStatus} = useContext
   (MyGlobalContext)
 
+  // useEffect(() => {
+  //   localStorage.removeItem('token')
+  //   setToken('')
+  // }, [])
+
 
   const navigate = useNavigate()
   const isLogin = useLocation().pathname.startsWith('/login')
+
+  useEffect(() => {
+      localStorage.removeItem('token')
+      setToken('')
+    }, [])
  
   const [name, setName] =  useState('')
   const [email, setEmail] = useState('')
@@ -49,7 +59,7 @@ function Login() {
 
     
     const endPoint = isLogin ? clientUrl + '/user-login' : adminBackendUrl + '/admin-login'  
-  
+
     try {
       const response = await axios.post(endPoint, {
         email : email,
@@ -63,7 +73,7 @@ function Login() {
         return
       }else{
         toast.success(`${response.data.message}`)
-        sessionStorage.setItem('token', response.data.token)
+        localStorage.setItem('token', response.data.token)
         setToken(response.data.token)
         setEmail('')
         setPassword('')
