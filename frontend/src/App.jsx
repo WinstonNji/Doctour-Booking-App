@@ -18,7 +18,7 @@ import Verification from './pages/Verification'
 
 // Protected Route
 import ProtectedRoutes from './components/ProtectedRoutes';
-
+import DoctorProtectRoute from './components/DoctorProtectRoute';
 
 // admin imports
 import AdminNavbar from './admin/components/Navbar'
@@ -26,8 +26,13 @@ import SideBar from './admin/components/SideBar'
 import Add_Doctor from './admin/pages/Add_Doctor'
 import All_Appointments from './admin/pages/All_Appointments'
 import All_Doctors from './admin/pages/All_Doctors'
+import Doctor_Edit from './admin/pages/Doctor_Edit'
 import Login from './auth/Login';
 
+// doctour imports
+import DoctorDashboard from './doctor/DoctorDashboard';
+import DoctorAppointments from './doctor/DoctorAppointments';
+import DoctorProfile from './doctor/DoctorProfile';
 
 const App = () => {
   const location = useLocation();
@@ -35,12 +40,13 @@ const App = () => {
   const isAdminRoute = location.pathname.startsWith('/admin')
   const isLogin = location.pathname.startsWith('/login')
   const isVerificationPage = location.pathname.startsWith('/verify')
+  const isDoctorRoute = location.pathname.startsWith('/doctor-')
   return (
-    <div className={`${!isAdminRoute && !isLogin && !isVerificationPage ? 'mx-[10%] ' : 'overflow-x-hidden overflow-y-hidden' }`}>
-      {!isAdminRoute && !isVerificationPage && <NavBar></NavBar>}
+    <div className={`${!isAdminRoute && !isLogin && !isVerificationPage && !isDoctorRoute ? 'mx-[10%] ' : 'overflow-x-hidden overflow-y-hidden' }`}>
+      {!isAdminRoute && !isVerificationPage && !isDoctorRoute && <NavBar></NavBar>}
 
-      {isAdminRoute && <AdminNavbar /> }
-      {isAdminRoute && <SideBar /> }
+      {(isAdminRoute || isDoctorRoute) && <AdminNavbar /> }
+      {(isAdminRoute || isDoctorRoute) && <SideBar /> }
   
 
       <Routes>
@@ -55,19 +61,30 @@ const App = () => {
         <Route path='/my-appointments' element={<MyAppointments  />} />
         <Route path='/appointment/:docId' element={<Appointment  />} />
         <Route path='/verify' element={<Verification />}/>
+
         {/* Admin Routes */}
-        
         <Route element={< ProtectedRoutes/>}>
           <Route path='/admin-dashboard' element={<Dashboard />}></Route>
           <Route path='/admin-add-doctor' element={<Add_Doctor />}></Route>
           <Route path='/admin-appointments' element={<All_Appointments />} ></Route>
           <Route path='/admin-doctor-list' element={<All_Doctors />}></Route>
+          <Route path='/admin-doctor/:id' element={<Doctor_Edit />}></Route>
         </Route>
 
         <Route path='/admin-login' element={<Login />}></Route>
+
+        {/* Doctour Route */}
+        <Route element={<DoctorProtectRoute />}>
+          <Route path='/doctor-dashboard' element={<DoctorDashboard />} />
+          <Route path='/doctor-appointments' element={<DoctorAppointments />} />
+          <Route path='/doctor-profile' element={<DoctorProfile />}></Route>
+        </Route>
+        
       </Routes>
 
-      {!isAdminRoute && !isLogin && !isVerificationPage && <Footer></Footer>}
+      
+
+      {!isAdminRoute && !isLogin && !isVerificationPage && !isDoctorRoute && <Footer></Footer>}
       <ToastContainer />
     </div>
   )

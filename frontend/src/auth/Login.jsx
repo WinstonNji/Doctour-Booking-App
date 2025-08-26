@@ -7,7 +7,7 @@ import {useNavigate, useLocation} from 'react-router-dom'
 
 
 function Login() {
-  const {adminBackendUrl, setToken, clientUrl, setUserLoginStatus} = useContext
+  const {adminBackendUrl, setToken, clientUrl, doctorUrl, setUserLoginStatus} = useContext
   (MyGlobalContext)
 
   // useEffect(() => {
@@ -17,17 +17,36 @@ function Login() {
 
 
   const navigate = useNavigate()
-  const isLogin = useLocation().pathname.startsWith('/login')
+  const location = useLocation()
+  const isLogin = location.pathname.startsWith('/login')
 
   useEffect(() => {
       localStorage.removeItem('token')
       setToken('')
     }, [])
+
+  // Ensure the correct view and header reflect the current route
+  useEffect(() => {
+      if(location.pathname.startsWith('/admin-login')){
+        setDoctorLogin(false)
+        setRegister(false)
+      }
+
+      if(location.pathname.startsWith('/login')){
+        // If navigation provided state to open doctor form, honor it; else default user
+        if(location.state && location.state.doctor === true){
+          setDoctorLogin(true)
+        }else{
+          setDoctorLogin(false)
+        }
+      }
+    }, [location.pathname])
  
   const [name, setName] =  useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [register, setRegister] = useState(false)
+  const [doctorLogin, setDoctorLogin] = useState(false)
 
   async function Login(event){
     event.preventDefault()
@@ -57,8 +76,35 @@ function Login() {
       return 
     }
 
+    if(doctorLogin){
+      const endPoint = doctorUrl + '/doctor-login'
+      const data = {
+        email,
+        password
+      }
+      try {
+          const response = await axios.post(endPoint, data)
+          if(response.data.success){
+            setUserLoginStatus(true)
+            toast.success(response.data.message)
+            localStorage.setItem('token', response.data.token)
+            setToken(response.data.token)
+            setEmail('')
+            setPassword('')
+            navigate('/doctor-dashboard')
+          }else{
+            toast.error(response.data.message)
+            setDoctorLogin(false)
+          } 
+      }catch (error) {
+            console.log(error)
+            toast.error('Something went wrong. Please try again later')
+        }
+
+        return
+    }
     
-    const endPoint = isLogin ? clientUrl + '/user-login' : adminBackendUrl + '/admin-login'  
+    const endPoint = isLogin && !doctorLogin ? clientUrl + '/user-login' : adminBackendUrl + '/admin-login'  
 
     try {
       const response = await axios.post(endPoint, {
@@ -92,9 +138,15 @@ function Login() {
         {/* Container */}
       <div className='w-3/4 md:w-1/2 p-12 ring ring-white bg-white rounded-4xl shadow'>
 
-        <p className={`mb-8 text-2xl font-bold underline ${register ? 'hidden' : null}`}>{isLogin ? 'Login' : 'Admin-Login'}</p>
-
-        <p className={`mb-8 text-2xl font-bold underline ${!register ? 'hidden' : null}`}>{!register ? 'Login' : 'Register'}</p>
+        <p className={`mb-8 text-2xl font-bold text-primary`}>
+          {register
+            ? 'Register'
+            : location.pathname.startsWith('/admin-login')
+              ? 'Admin Login'
+              : doctorLogin
+                ? 'Doctor Login'
+                : 'Login'}
+        </p>
         
         <form onSubmit={Login} action="" className='flex flex-col gap-8'>
 
@@ -113,7 +165,6 @@ function Login() {
                   value={name}
                   onChange={(event) => setName(event.target.value)}
                   required = {register}
-
                 />
 
             </div>
@@ -159,25 +210,51 @@ function Login() {
                 {register ? 'Register' : 'Login'}
             </button>
 
-            <div className={`text-primary cursor-pointer ${!isLogin ? 'hidden' : 'flex gap-2'}`}>
-                {
-                  !register && (
-                    <p className='text-black'>
-                      New User? <span onClick={() => setRegister(true)} className='text-primary cursor-pointer'>
-                          {!register ? 'Register instead' : 'Login Instead'}
-                      </span>
-                    </p> 
-                  )
-                } 
+            {register ? (
+              <div className='-mb-6'>
+                <p onClick={() => setRegister(false)} className='text-black'>
+                  Already have an account? <span className='text-primary cursor-pointer'>Login</span>
+                </p>
+              </div>
+            ) : doctorLogin ? (
+              <div className='flex flex-col gap-2 -mb-6'>
+                <div className='flex gap-2'>
+                  <p>Are you an admin?</p>
+                  <span className='text-primary cursor-pointer' onClick={() => navigate('/admin-login')}>Admin Login</span>
+                </div>
+                <div className='flex gap-2'>
+                  <p>Login as user instead?</p>
+                  <span className='text-primary cursor-pointer' onClick={() => setDoctorLogin(false)}>User Login</span>
+                </div>
+              </div>
+            ) : isLogin ? (
+              <div className='flex flex-col gap-2 -mb-6'>
+                <div className='flex gap-2'>
+                  <p className='text-black'>New User?</p>
+                  <span onClick={() => setRegister(true)} className='text-primary cursor-pointer'>Register instead</span>
+                </div>
+                <div className='flex gap-2'>
+                  <p>Login as Doctor Instead</p>
+                  <span className='text-primary cursor-pointer' onClick={() => setDoctorLogin(true)}>Doctor Login</span>
+                </div>
+                <div className='flex gap-2'>
+                  <p>Are you admin?</p>
+                  <span className='text-primary cursor-pointer' onClick={() => { setDoctorLogin(false); navigate('/admin-login') }}>Admin Login</span>
+                </div>
+              </div>
+            ) : (
+              <div className='flex flex-col gap-2 -mb-6'>
+                <div className='flex gap-2'>
+                  <p>Login as Doctor</p>
+                  <span className='text-primary cursor-pointer' onClick={() => navigate('/login', { state: { doctor: true } })}>Doctor Login</span>
+                </div>
+                <div className='flex gap-2'>
+                  <p>Login as User</p>
+                  <span className='text-primary cursor-pointer' onClick={() => navigate('/login')}>User Login</span>
+                </div>
+              </div>
+            )}
 
-                {
-                  register && (
-                    <p onClick={() => setRegister(false)} className='text-black'  >Already have and account? <span className={`text-primary cursor-pointer `}>Login Instead</span></p>
-                    
-                  )
-                }
-                
-            </div>
 
         </form>
         

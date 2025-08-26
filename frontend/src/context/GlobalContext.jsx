@@ -26,7 +26,6 @@ function GlobalContext({children}) {
     const [appointmentData, setAppointmentData] = useState([])
 
     const fetchAllDoctors = async () => {
-            console.log('called') 
         try {
             // endpoint
             const endpoint = `${values.generalUrl}` + '/getAllDoctors'
@@ -60,6 +59,7 @@ function GlobalContext({children}) {
         clientUrl : 'http://localhost:4000/api/user',
         appointmentUrl : 'http://localhost:4000/api/appointment',
         paymentUrl : 'http://localhost:4000/api/payments',
+        doctorUrl : 'http://localhost:4000/api/doctor',
         // Token
         token,
         setToken,
@@ -122,7 +122,6 @@ function GlobalContext({children}) {
   }, [token])
 
 useEffect(() => {
-    console.log('called')
     const fetchProfile = async () => {
         const endpoint = values.clientUrl + '/get-user'
         const headers = {

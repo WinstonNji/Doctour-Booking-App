@@ -3,6 +3,7 @@ import { Outlet, useNavigate } from 'react-router-dom'
 import { MyGlobalContext } from '../context/GlobalContext'
 import { useContext } from 'react'
 import axios from 'axios'
+import Loading from './Loading'
 
 function ProtectedRoutes() {
     const {token, setToken, adminBackendUrl} = useContext(MyGlobalContext)
@@ -39,7 +40,7 @@ function ProtectedRoutes() {
         
     }, [token, navigate])
 
-    return isVerified ? <Outlet /> : null
+    return isVerified ? <Outlet /> : <Loading label="Checking admin access..." />
 
     
 }
