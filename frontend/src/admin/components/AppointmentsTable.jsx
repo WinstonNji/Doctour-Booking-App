@@ -1,8 +1,13 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { assets as adminAssets } from '../../assets/assets_admin/assets'
 import { MyGlobalContext } from '../../context/GlobalContext'
 import { toast } from 'react-toastify'
 import axios from 'axios'
+import Loading from '../../components/Loading'
+import {useLocation} from 'react-router-dom'
+import { assets } from '../../assets/assets_admin/assets.js'
+import { MyDoctorContext } from '../../context/DoctorContext.jsx'
+import StatusBadge from './StatusBadge.jsx'
 
 const AppointmentsTable = ({ 
   appointments = [], 
@@ -12,19 +17,49 @@ const AppointmentsTable = ({
   maxRows = null 
 }) => {
 
-  
+  const isDoctorRoute = useLocation().pathname.startsWith('/doctor')
   const displayAppointments = maxRows ? appointments.slice(0, maxRows) : appointments
 
-  const {clientUrl, token} = useContext(MyGlobalContext)
+  const {clientUrl, token, appointmentUrl} = useContext(MyGlobalContext)
+
+  const [completingId, setCompletingId] = useState(null)
+  const [cancellingId, setCancellingId] = useState(null)
+
+  async function completeAppointment (appointmentId){
+    try {
+      setCompletingId(appointmentId)
+      const endPoint = appointmentUrl + '/complete-appointment'
+      const headers = {
+          Authorization : `Bearer ${token}`
+      }
+
+      const response = await axios.post(endPoint, {appointmentId} ,{headers})
+      
+      if(!response.data.success){
+        toast.error(response.data.message)
+        return
+      }
+
+      toast.success(response.data.message)
+      window.location.reload()
+    } catch (error) {
+      console.log(error)
+      toast.error('An error occurred')
+      return
+      
+    } finally {
+      setCompletingId(null)
+    }
+       
+    }
 
   const cancelAppointment = async (appointmentId) => 
   {
-    console.log(appointmentId)
     try {
+      setCancellingId(appointmentId)
       const endPoint = clientUrl + '/cancel-appointment'
       const headers = { Authorization: `Bearer ${token}` }
       const response = await axios.post(endPoint, { appointmentId }, { headers })
-      console.log(response.data)
       if (response.data.success) {
         toast.success(response.data.message)
         window.location.reload()
@@ -34,6 +69,8 @@ const AppointmentsTable = ({
     } catch (error) {
       console.error(error)
       toast.error('An error occurred')
+    } finally {
+      setCancellingId(null)
     }
   }
 
@@ -50,13 +87,14 @@ const AppointmentsTable = ({
             idx={idx + 1}
             showActions={showActions}
             cancelAppointment={cancelAppointment}
+            completeAppointment={completeAppointment}
           />
         ))}
       </div>
 
-      {/* Original Desktop Table - unchanged */}
+      {/* Desktop Table */}
       <div className="hidden md:block">
-        <table className='table table-auto border border-gray-400 min-w-1.5 lg:w-[95%] mt-4 bg-white'>
+        <table className='table table-auto border border-gray-400 min-w-1.5 lg:w-[99%] mt-4 bg-white'>
           {caption && (
             <caption className="caption-top text-sm mb-2 text-gray-500">
               {caption}
@@ -67,15 +105,18 @@ const AppointmentsTable = ({
             <tr className='py-4'>
               <th className='py-4 px-2'>#</th>
               <th>Patient</th>
-              <th>Department</th>
+              {!isDoctorRoute && <th>Department</th>}
               <th>Gender</th>
               <th>Date & Time</th>
-              <th>Doctor</th>
+              {!isDoctorRoute && <th>Doctor</th>}
               <th>Fees</th>
               <th>Status</th>
               <th>Payment Status</th>
               <th>Completion Status</th>
               {showActions && <th>Actions</th>}
+              <th>
+                <div className='w-1/2'>Complete</div>
+              </th>
             </tr>
           </thead>
 
@@ -87,6 +128,9 @@ const AppointmentsTable = ({
                 idx={idx + 1}
                 showActions={showActions}
                 cancelAppointment={cancelAppointment}
+                completeAppointment={completeAppointment}
+                completingId={completingId}
+                cancellingId={cancellingId}
               />
             ))}
           </tbody>
@@ -96,8 +140,9 @@ const AppointmentsTable = ({
   )
 }
 
-const MobileAppointmentCard = ({ appointment, idx, showActions, cancelAppointment }) => {
-  const { formatDate, clientUrl, token} = useContext(MyGlobalContext)
+const MobileAppointmentCard = ({ appointment, idx, showActions, cancelAppointment, completeAppointment }) => {
+  const isDoctorRoute = useLocation().pathname.startsWith('/doctor')
+  const { formatDate} = useContext(MyGlobalContext)
   const handleCancel = (appointmentId) => {
     cancelAppointment(appointmentId)
   }
@@ -107,11 +152,7 @@ const MobileAppointmentCard = ({ appointment, idx, showActions, cancelAppointmen
       <div className="flex justify-between items-start mb-4">
         <span className="text-sm font-semibold text-gray-500">#{idx}</span>
         <div className='flex justify-center '>
-            {appointment.cancelled ? (
-              <p className='text-red-400 font-semibold'>Cancelled</p>
-            ) : (
-              <p className='text-orange-400 font-semibold '>Active</p>
-            )}
+          <StatusBadge type="general" appointment={appointment} />
         </div>
       </div>
 
@@ -133,21 +174,23 @@ const MobileAppointmentCard = ({ appointment, idx, showActions, cancelAppointmen
         </div>
 
         {/* Doctor Section */}
-        <div className="border-l-4 border-green-400 pl-3">
-          <p className="text-xs font-semibold text-green-600 uppercase tracking-wide mb-2">DOCTOR</p>
-          <div className="flex items-center gap-3">
-            <img 
-              className='w-12 rounded-full' 
-              src={appointment?.doctorData?.image} 
-              alt="" 
-            />
-            <div className="flex-1">
-              <p className="font-bold text-gray-800 text-lg">{appointment?.doctorData?.name}</p>
-              <p className="text-sm text-gray-600">{appointment?.doctorData?.speciality}</p>
+        {!isDoctorRoute && (
+          <div className="border-l-4 border-green-400 pl-3">
+            <p className="text-xs font-semibold text-green-600 uppercase tracking-wide mb-2">DOCTOR</p>
+            <div className="flex items-center gap-3">
+              <img 
+                className='w-12 rounded-full' 
+                src={appointment?.doctorData?.image} 
+                alt="" 
+              />
+              <div className="flex-1">
+                <p className="font-bold text-gray-800 text-lg">{appointment?.doctorData?.name}</p>
+                <p className="text-sm text-gray-600">{appointment?.doctorData?.speciality}</p>
+              </div>
             </div>
           </div>
-        </div>
-
+        )}
+        
         {/* Appointment Details */}
         <div className="bg-gray-50 p-3 rounded-lg">
           <div className="flex justify-between items-center mb-2">
@@ -158,7 +201,7 @@ const MobileAppointmentCard = ({ appointment, idx, showActions, cancelAppointmen
           </div>
           <div className="flex justify-between items-center">
             <p className="text-sm font-semibold text-gray-700">Consultation Fee</p>
-            <p className="text-lg font-bold text-green-600">${appointment?.doctorData?.fee}</p>
+            <p className="text-lg font-bold text-green-600">${appointment?.amount}</p>
           </div>
         </div>
 
@@ -166,142 +209,124 @@ const MobileAppointmentCard = ({ appointment, idx, showActions, cancelAppointmen
         <div className="grid grid-cols-2 gap-3">
           <div className="bg-orange-50 p-3 rounded-lg text-center">
             <p className="text-xs font-semibold text-gray-600 mb-1">PAYMENT</p>
-            {!appointment.cancelled ? (
-                appointment.payment ? (
-                <p className='text-green-600 font-bold'>Paid</p>
-                ) : (
-                <p className='text-orange-400 font-bold'>Pending</p>
-                )
-            ) : (
-                <p className='text-red-400 font-bold'>Cancelled</p>
-            )}
+            <StatusBadge type="payment" appointment={appointment} />
           </div>
           <div className="bg-blue-50 p-3 rounded-lg text-center">
             <p className="text-xs font-semibold text-gray-600 mb-1">COMPLETION</p>
-            {!appointment.cancelled ? (
-                appointment.isCompleted ? (
-                <p className='text-green-400 font-bold'>Complete</p>
-                ) : (
-                <p className='text-orange-400 font-bold'>Pending</p>
-                )
-            ) : (
-                <p className='text-red-400 font-bold'>Cancelled</p>
-            )}
+            <StatusBadge type="completion" appointment={appointment} />
           </div>
         </div>
 
+        {/* Actions - Hidden for completed appointments */}
+        {showActions && !appointment.cancelled && !appointment.isCompleted && (
+          <div className="flex justify-center pt-3 border-t border-gray-200">
+            <button onClick={() => handleCancel(appointment._id)} className='flex justify-center cursor-pointer p-2 hover:bg-gray-100 rounded-lg transition-all'>
+              <img 
+                className='self-center' 
+                src={adminAssets.cancel_icon} 
+                alt="Cancel" 
+              />
+            </button>
+          </div>
+        )}
 
-        {/* Actions */}
-        
-          {showActions && !appointment.cancelled && (
-            <div className="flex justify-center pt-3 border-t border-gray-200">
-              <button onClick={() => handleCancel(appointment._id)} className='flex justify-center cursor-pointer p-2 hover:bg-gray-100 rounded-lg transition-all'>
-                <img 
-                  className='self-center' 
-                  src={adminAssets.cancel_icon} 
-                  alt="Cancel" 
-                />
-              </button>
-            </div>
-          )}
-          
-        
+        {/* Completion Icon */}
+        {!appointment.isCompleted && !appointment.cancelled ? (
+          <div onClick={()=> completeAppointment(appointment._id)} className='mt-4 cursor-pointer hover:border-secondary border border-primary p-2 rounded-lg flex justify-center active:scale-95 transition-all'>
+            <img className='w-10' src={assets.completed_icon} alt="completedIcon" />
+          </div>
+        ) : appointment.isCompleted && (
+          <div className='mt-4 flex justify-center p-2'>
+            <svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#22c55e">
+              <path d="m424-296 282-282-56-56-226 226-114-114-56 56 170 170Zm56 216q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/>
+            </svg>
+          </div>
+        )}       
       </div>
     </div>
   )
 }
 
-const TableRow = ({ appointment, idx, showActions, cancelAppointment }) => {
+const TableRow = ({ appointment, idx, showActions, cancelAppointment, completeAppointment, completingId, cancellingId }) => {
+  const isDoctorRoute = useLocation().pathname.startsWith('/doctor')
   const { formatDate } = useContext(MyGlobalContext)
-
   const handleCancel = (appointmentId) => {
     cancelAppointment(appointmentId)
   }
-
   return (
     <tr className='hover:bg-secondary hover:text-gray-600 transition-all ease-in-out duration-150'>
-      <td>{idx}</td>
-      <td>
+      <td className='py-3'>{idx}</td>
+      <td className='py-3'>
         <div className='flex justify-center'>
           <div className='flex items-center gap-2'>
             <img 
               className='w-12 rounded-full' 
               src={appointment?.userData?.image} 
-              alt="" 
+              alt="patient image" 
             />
             <p>{appointment?.userData?.name}</p>
           </div>
         </div>
       </td>
-      <td>{appointment?.doctorData?.speciality}</td>
-      <td>{appointment?.userData?.gender}</td>
-      <td>{formatDate(appointment.slotDate)} | {appointment.slotTime}</td>
-      <td>
-        <div className='flex justify-center py-4'>
-          <div className='flex items-center gap-2'>
-            <img 
-              className='w-12 rounded-full' 
-              src={appointment?.doctorData?.image} 
-              alt="" 
-            />
-            <p>{appointment?.doctorData?.name}</p>
+      {!isDoctorRoute && <td className='py-3'>{appointment?.doctorData?.speciality}</td>}
+      <td className='py-3'>{appointment?.userData?.gender}</td>
+      <td className='py-3'>{formatDate(appointment.slotDate)} | {appointment.slotTime}</td>
+      
+      {!isDoctorRoute && (
+        <td className='py-3'>
+          <div className='flex justify-center py-4'>
+            <div className='flex items-center gap-2'>
+              <img 
+                className='w-12 rounded-full' 
+                src={appointment?.doctorData?.image} 
+                alt="doctorImage" 
+              />
+              <p>{appointment?.doctorData?.name}</p>
+            </div>
           </div>
-        </div>
-      </td>
-      <td>${appointment?.doctorData?.fee}</td>
-      <td>
-        <div className='flex justify-center '>
-            {appointment.cancelled ? (
-              <p className='text-red-400 font-semibold'>Cancelled</p>
+        </td>
+      )}
+        
+      <td className='py-3'>${appointment?.amount}</td>
+      <td className='py-3'><StatusBadge type="general" appointment={appointment} /></td>
+      <td className='py-3'><StatusBadge type="payment" appointment={appointment} /></td>
+      <td className='py-3'><StatusBadge type="completion" appointment={appointment} /></td>
+        
+      {/* Actions - Hidden for completed and cancelled appointments */}
+      {showActions && (
+        <td className={appointment.cancelled || appointment.isCompleted ? 'hidden py-3' : 'py-3'}>
+          <div onClick={() => handleCancel(appointment._id)} className='flex justify-center cursor-pointer'>
+            {cancellingId === appointment._id ? (
+              <span className='inline-block w-5 h-5 border-2 border-gray-300 border-t-primary rounded-full animate-spin'></span>
             ) : (
-              <p className='text-primary font-semibold '>Active</p>
-            )}
-        </div>        
-      </td>
-      <td>
-        {!appointment.cancelled ? (
-            <div className='flex justify-center '>
-                {appointment.payment ? (
-                <p className='text-green-600 font-semibold'>Paid</p>
-                ) : (
-                <p className='text-orange-400 font-semibold '>Pending</p>
-                )}
-            </div>
-        ) : (
-        <div className='flex justify-center '>
-            <p className='text-red-400 font-semibold'>Cancelled</p>
-        </div>
-        )}
-        
-      </td>
-    <td>
-        {!appointment.cancelled ? (
-            <div className='flex justify-center '>
-                {appointment.isCompleted ? (
-                <p className='text-green-400 font-semibold'>Paid</p>
-                ) : (
-                <p className='text-orange-400 font-semibold '>Pending</p>
-                )}
-            </div>
-        ) : (
-        <div className='flex justify-center '>
-            <p className='text-red-400 font-semibold'>Cancelled</p>
-        </div>
-        )}
-      </td>
-        
-        
-        {showActions && (
-            <td className={appointment.cancelled ? 'hidden' : null}>
-            <div onClick={() => handleCancel(appointment._id)} className='flex justify-center cursor-pointer'>
-                <img 
+              <img 
                 className='self-center' 
                 src={adminAssets.cancel_icon} 
                 alt="Cancel" 
-                />
+              />
+            )}
+          </div>
+        </td>
+      )}
+      <td className='py-3'>
+        {
+          !appointment.cancelled && !appointment.isCompleted ? (
+           <div onClick={()=> completeAppointment(appointment._id)} className='cursor-pointer flex justify-center items-center hover:border-primary border border-secondary p-2 rounded-lg active:scale-90 active:bg-white  transition-all mr-5 '>
+            {completingId === appointment._id ? (
+              <span className='inline-block w-5 h-5 border-2 border-gray-300 border-t-primary rounded-full animate-spin'></span>
+            ) : (
+              <img className='w-6 self-center' src={assets.completed_icon} alt="completedIcon" />
+            )}
+          </div>
+          ) : appointment.isCompleted && (
+            <div className='flex justify-center items-center mr-5'>
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#22c55e">
+                <path d="m424-296 282-282-56-56-226 226-114-114-56 56 170 170Zm56 216q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/>
+              </svg>
             </div>
-            </td>
-        )}
+          )
+        }
+      </td>
     </tr>
   )
 }

@@ -15,6 +15,8 @@ import dropDown_icon from './dropdown-arrow-svgrepo-com.svg'
 import hamburgerMenu from './hamburgerMenu.svg'
 import filter_icon from './filter-svgrepo-com.svg'
 import dropUp_icon from './arrow-drop-up-svgrepo-com.svg'
+import completed_icon from './approval_delegation_24dp_5F6FFF_FILL0_wght400_GRAD0_opsz24.svg'
+import profileIcon from './article_person_24dp_434343_FILL0_wght400_GRAD0_opsz24.svg'
 
 export const assets = {
     add_icon,
@@ -33,5 +35,7 @@ export const assets = {
     dropDown_icon,
     dropUp_icon,
     hamburgerMenu,
-    filter_icon
+    filter_icon,
+    completed_icon,
+    profileIcon
 }

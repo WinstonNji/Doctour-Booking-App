@@ -28,7 +28,7 @@ function All_Appointments() {
   return (
     <div>
       <div className={`${filterisOpen ? 'ml-70' : 'ml-48'} pt-24 py-7 pl-6 min-h-screen bg-gray-50  `}>
-        <div className='flex gap-2 items-center justify-between mb-6 px-8 md:flex-row '>
+        <div className='gap-2 items-center justify-between mb-6 px-8 md:flex-row hidden '>
 
           {/* Filter Buttons */}
           <div onClick={() => setFilterIsOpen(prev => !prev)} className={` ${filterisOpen ? 'bg-primary text-white font-bold' : ''} border px-10 py-1.5 flex gap-2 items-center justify-center hover:border-primary`}>
