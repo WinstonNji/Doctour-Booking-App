@@ -48,7 +48,6 @@ const MyProfile = () => {
         
         if(response.data.success){
           const previewUrl = imageUrl ? URL.createObjectURL(imageUrl) : userData?.image
-          console.log(previewUrl)
           setPfp(previewUrl)
           toast.success(response.data.message)
         }else{

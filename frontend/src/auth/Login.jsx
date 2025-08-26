@@ -53,7 +53,6 @@ function Login() {
 
     if(register){
       const endPoint = clientUrl + '/user-registration'
-      console.log(name,email,password)
       try {
         const response = await axios.post(endPoint, {
           name,
@@ -112,7 +111,7 @@ function Login() {
         password : password
       })
 
-      console.log(response)
+      
 
       if(!response.data.success){
         toast.error(`${response.data.message}`)

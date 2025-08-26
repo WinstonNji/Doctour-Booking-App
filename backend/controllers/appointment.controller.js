@@ -79,11 +79,7 @@ const completeAppointment = async (req,res) => {
     }
     const updatedAppointment = await appointmentModel.findByIdAndUpdate(appointmentData._id, {isCompleted:true})
 
-    console.log(updatedAppointment)
-
     const doctorData = await doctorModel.findById(appointmentData.docId)
-
-    console.log(doctorData, '---doctor data---')
 
     let slots_booked = doctorData.slots_booked
 

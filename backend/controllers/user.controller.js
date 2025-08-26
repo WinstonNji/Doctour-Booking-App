@@ -162,7 +162,7 @@ const bookAppointment = async (req,res) => {
         }
     }
 
-    console.log(appointments, '---appointments---')
+    
 
     if(appointmentObject[slotDate]){
         if(appointmentObject[slotDate].includes(slotTime)){
@@ -185,7 +185,7 @@ const bookAppointment = async (req,res) => {
 
    const updatedDoctor = await doctorModel.findByIdAndUpdate(docId, {slots_booked}, {new:true})
 
-   console.log(updatedDoctor, 'Dcctorrr-booking')
+   
 
     const appointmentData = {
         userId,

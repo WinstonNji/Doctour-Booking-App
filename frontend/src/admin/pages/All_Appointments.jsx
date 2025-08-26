@@ -6,7 +6,6 @@ import { assets } from '../../assets/assets_admin/assets'
 
 function All_Appointments() {
   const { fetchAllAppointments, appointmentData } = useContext(MyGlobalContext)
-  console.log(appointmentData)
   const [filterisOpen, setFilterIsOpen] = useState(false)
   const [departmentIsOpen, setDepartmentIsOpen] = useState(false)
   const [genderIsOpen, setGenderIsOpen] = useState(false)

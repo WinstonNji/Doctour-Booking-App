@@ -42,10 +42,7 @@ function DoctorContext({children}) {
 
         setAppointments(response.data.data)
 
-        console.log(appointments)
-
         } catch (error) {
-            console.log(error)
         }
         
     }

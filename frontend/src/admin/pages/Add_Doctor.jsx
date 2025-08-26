@@ -54,7 +54,6 @@ function Add_Doctor() {
     try {
 
       const toastId = toast.loading('Creating Doctor Profile....')
-      console.log(toastId)
 
       const response = await axios.post(endPoint, formData, {headers})
 

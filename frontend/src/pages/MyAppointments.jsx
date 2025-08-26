@@ -15,11 +15,7 @@ const MyAppointments = () => {
       const headers = { Authorization: `Bearer ${token}` }
       const response = await axios.get(endPoint, { headers })
 
-      console.log("Response from my appointments:", response.data)
-
       setAppointments(response.data.appointments)
-
-      console.log(appointments)
     } catch (error) {
       console.error(error)
       toast.error('Failed to fetch appointments')
@@ -83,7 +79,6 @@ const AppointmentCard = ({ appointment, refreshAppointments }) => {
   }
 
   const cancelAppointment = async (appointmentId) => {
-    console.log(appointmentId, 'cancel appointment id')
     try {
       const endPoint = clientUrl + '/cancel-appointment'
       const headers = { Authorization: `Bearer ${token}` }

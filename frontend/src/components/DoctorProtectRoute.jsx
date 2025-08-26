@@ -14,7 +14,6 @@ function DoctorProtectRoute() {
     const navigate = useNavigate()
 
     const verifyDoctor = async () => {
-        console.log(token, '----token')
 
         const endPoint = doctorUrl + '/verify-doctor-token'
         const headers = {Authorization : `Bearer ${token}`}

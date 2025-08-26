@@ -22,7 +22,7 @@ function Verification() {
 
     async function verifyTransaction(appointmentId, transactionId){
       const endPoint = paymentUrl + `/verify/${transactionId}`
-      console.log(token, '-------------dwdwd')  
+        
 
       const config = {
         headers : {
@@ -34,8 +34,6 @@ function Verification() {
       
       }
       const response = await axios.get(endPoint, config)
-
-      console.log(response.data, '-------')
       
       if(!response.data.success){
         toast.error(response.data.message)

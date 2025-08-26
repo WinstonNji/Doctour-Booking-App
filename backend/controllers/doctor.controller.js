@@ -34,8 +34,6 @@ const doctorLogin = async (req, res) => {
 const getDoctorAppointments = async (req,res) => {
     const {role, userId} = req.user
 
-    console.log(userId, '---userId from getDoctorAppointments---')
-
     if(role !== 'doctor'){
         return errorJson(403, "Unauthorized Access", res)
     }
@@ -53,9 +51,6 @@ const getDoctorAppointments = async (req,res) => {
     if(!doctorAppointmentData){
         return errorJson(404, "No Appointments found", res)
     }
-
-    console.log(doctorAppointmentData, '----doctor appointment data----')
-
 
 
     return res.status(200).json({success:true, message:"Appointments fetched successfully", data: doctorAppointmentData})

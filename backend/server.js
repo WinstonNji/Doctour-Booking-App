@@ -36,6 +36,5 @@ app.use('/api/appointment', appointmentRouter)
 app.use('/api/payments', paymentRouter)
 
 app.listen(port, ()=> {
-    console.log('app started')
-    console.log(port)
+    
 })

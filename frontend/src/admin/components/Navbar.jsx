@@ -9,7 +9,6 @@ function AdminNavbar() {
   const navigate = useNavigate()
 
   function AdminLogout (){
-    console.log('clicked')
     
     localStorage.removeItem('token')
     navigate('/')

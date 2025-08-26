@@ -96,16 +96,12 @@ const initatePayment = async (req,res) => {
 
             const slots_booked = doctorData.slots_booked
 
-            console.log(doctorData, 'beforreeeeeee')
-
             if(!slots_booked[slotDate]){
                 slots_booked[slotDate] = []
                 slots_booked[slotDate].push(slotTime)
             }
 
             const updatedDoctor =await doctorModel.findByIdAndUpdate(docId, {slots_booked})
-
-            console.log(updatedDoctor, 'afterrrrrrr')
         
 
             return res.json({success: true, message: "Transaction successfully Verified, Appointment Booked", response: response.data})
