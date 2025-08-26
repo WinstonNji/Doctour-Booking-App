@@ -19,7 +19,6 @@ function DoctorDashboard() {
 
   return (
     <div className='ml-48 pt-24 pl-6 min-h-screen  bg-gray-50'>
-        <DashboardInfo></DashboardInfo>
         <AppointmentsTable 
           appointments={appointments}
           showActions = {false}
