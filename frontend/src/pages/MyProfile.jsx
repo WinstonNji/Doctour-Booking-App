@@ -5,6 +5,7 @@ import axios from 'axios'
 import { MyGlobalContext } from '../context/GlobalContext'
 import { useContext } from 'react'
 import { toast } from 'react-toastify'
+import Loading from '../components/Loading'
  
 
 const MyProfile = () => {
@@ -14,6 +15,7 @@ const MyProfile = () => {
 
   const [isEditOn, setEdit] = useState(false)
   const [imageUrl, setImageUrl] = useState(false)
+  const [saving, setSaving] = useState(false)
 
 
    async function editProfile(){
@@ -41,6 +43,7 @@ const MyProfile = () => {
       
 
       try {
+        setSaving(true)
         const response =  await axios.patch(endpoint, formData, {headers})
         
         if(response.data.success){
@@ -54,6 +57,8 @@ const MyProfile = () => {
 
       } catch (error) {
       
+      } finally {
+        setSaving(false)
       }
     }
     
@@ -183,11 +188,11 @@ const MyProfile = () => {
         
 
         
-        <button onClick={() => {
+        <button disabled={saving} onClick={() => {
           setEdit(prev => !prev)
           editProfile()
-        }} className='mt-6 px-8 rounded-full ring-primary ring py-1'>
-          {isEditOn ? 'Save' : "Edit"}
+        }} className='mt-6 px-8 rounded-full ring-primary ring py-1 disabled:opacity-60'>
+          {isEditOn ? (saving ? 'Saving...' : 'Save') : "Edit"}
         </button>
 
       </div>

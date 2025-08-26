@@ -11,7 +11,7 @@ const DoctorCard = (doctors) => {
 
   return (
     <div>
-        <Link to={`${startsWithAdmin ? '' : `/appointment/${doctors._id}`}`}>
+        <Link to={`${startsWithAdmin ? `/admin-doctor/${doctors._id}` : `/appointment/${doctors._id}`}`}>
             <div  className='border-1 border-primary rounded-xl overflow-hidden hover:-translate-y-2 transition-transform duration-300 ease-in-out  group w-fit '  >
                 <div className='flex bg-secondary items-center group-hover:bg-primary transition-colors duration-200 ease-in-out'>
                     <img className={`object-contain `} src={doctors.image} alt="" />
