@@ -18,7 +18,17 @@ connectCloudinary()
 
 // middlewares
 app.use(express.json())
-app.use(cors())
+app.use(cors({
+  origin: 'https://doctour-booking-app-1.onrender.com', // your frontend
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  credentials: true
+}));
+app.use(express.json())
+app.use(cors({
+  origin: 'https://doctour-booking-app-1.onrender.com', // your frontend
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  credentials: true
+}));
 
 
 // api endpoint
