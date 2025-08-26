@@ -67,8 +67,6 @@ export const userLogin = async (req,res) => {
 const getProfile = async (req,res) => {
     const userId = req.user.userId
 
-    console.log(userId)
-
     if(!userId){
         return errorJson(res)
     }
@@ -154,7 +152,7 @@ const bookAppointment = async (req,res) => {
     const appointmentObject = {}
 
     for (let appointment of appointments) {
-        if (!appointment.cancelled) {  
+        if (!appointment.cancelled && !appointment.isCompleted) {  
             if (appointmentObject[appointment.slotDate]) {
                 appointmentObject[appointment.slotDate].push(appointment.slotTime)
             } else {
@@ -163,6 +161,8 @@ const bookAppointment = async (req,res) => {
             }
         }
     }
+
+    console.log(appointments, '---appointments---')
 
     if(appointmentObject[slotDate]){
         if(appointmentObject[slotDate].includes(slotTime)){
@@ -183,7 +183,9 @@ const bookAppointment = async (req,res) => {
         slots_booked[slotDate].push(slotTime)
     }
 
-   await doctorModel.findByIdAndUpdate(docId, {slots_booked})
+   const updatedDoctor = await doctorModel.findByIdAndUpdate(docId, {slots_booked}, {new:true})
+
+   console.log(updatedDoctor, 'Dcctorrr-booking')
 
     const appointmentData = {
         userId,
@@ -204,14 +206,11 @@ const bookAppointment = async (req,res) => {
 const cancelappointment = async (req,res) => {
     const {role} = req.user
 
-    if(role !== 'admin' && role !== 'user'){
+    if(role !== 'admin' && role !== 'user' && role !== 'doctor'){
         return res.json({success:false, message: "Access Denied"})
     }
     
     const {appointmentId} = req.body
-
-
-    console.log(appointmentId, '-----appointmentId')
 
     const appointmentData = await appointmentModel.findById(appointmentId)
 
@@ -219,6 +218,13 @@ const cancelappointment = async (req,res) => {
         return res.json({
             success: false,
             message: 'Paid appointments cannot be cancelled'
+        })
+    }
+
+    if(appointmentData.isCompleted){
+        return res.json({
+            success: false,
+            message: 'Cannot cancel a completed appointment'
         })
     }
 

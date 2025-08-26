@@ -1,6 +1,7 @@
 import axios from 'axios';
 import appointmentModel from '../models/appointment.model.js';
 import Flutterwave from 'flutterwave-node-v3'
+import { doctorModel } from '../models/doctor.model.js';
 
 const flw = new Flutterwave(
   process.env.FLW_PUBLIC_KEY,
@@ -17,8 +18,6 @@ const initatePayment = async (req,res) => {
     const {amount, email, name, appointmentId} = req.body
  
     const appointmentData = await appointmentModel.findById(appointmentId)
-
-    console.log(appointmentData)
 
     if(appointmentData.payment){
         return res.json({success:false, message: "Payment already made"})
@@ -60,8 +59,6 @@ const initatePayment = async (req,res) => {
 
         const role = req.user.role
 
-        console.log(role)
-
         if(!role){
             return res.json({success: false, message: `Access Denied`})
         }
@@ -87,10 +84,29 @@ const initatePayment = async (req,res) => {
                 return res.json({success: false, message: "Could not verify transaction"})
             }
 
-            const updatedAppointment = await appointmentModel.findByIdAndUpdate(appointmentId, {payment: true, cancelled:false})
-            
+            const updatedAppointment = await appointmentModel.findByIdAndUpdate(appointmentId, {payment: true})
 
-            console.log(updatedAppointment, '------')
+            const appointmentData = await appointmentModel.findById(appointmentId)
+
+            const docId = appointmentData.docId
+            const slotDate = appointmentData.slotDate
+            const slotTime = appointmentData.slotTime
+
+            const doctorData = await doctorModel.findById(docId)
+
+            const slots_booked = doctorData.slots_booked
+
+            console.log(doctorData, 'beforreeeeeee')
+
+            if(!slots_booked[slotDate]){
+                slots_booked[slotDate] = []
+                slots_booked[slotDate].push(slotTime)
+            }
+
+            const updatedDoctor =await doctorModel.findByIdAndUpdate(docId, {slots_booked})
+
+            console.log(updatedDoctor, 'afterrrrrrr')
+        
 
             return res.json({success: true, message: "Transaction successfully Verified, Appointment Booked", response: response.data})
         }catch (error) {

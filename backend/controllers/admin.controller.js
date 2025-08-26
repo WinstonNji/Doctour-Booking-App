@@ -47,8 +47,6 @@ export const addDoctor = async (req,res) => {
         const imageUpload = cloudinary.uploader.upload(imageFile.path, {resource_type : "image"})
         const imageUrl = (await imageUpload).secure_url
 
-        console.log("imageUpload:", imageUpload)
-
         const doctorData = {
             name,
             email,
@@ -77,3 +75,49 @@ export const addDoctor = async (req,res) => {
 
 
 
+
+// Admin update doctor details
+export const updateDoctorByAdmin = async (req,res) => {
+    try {
+        const { role } = req.user
+        if(role !== 'admin'){
+            return res.json({success: false, message: 'Access Denied'})
+        }
+
+        const { id } = req.params
+        let { address, speciality, experience, about } = req.body
+
+        // Normalize address
+        try {
+            if(typeof address === 'string'){
+                address = JSON.parse(address)
+            }
+        } catch (e) {
+            // if parsing fails, default to previous value on doc (handled by partial update)
+        }
+
+        const updateData = {}
+        if(address && typeof address === 'object') updateData.address = address
+        if(typeof speciality === 'string') updateData.speciality = speciality
+        if(typeof about === 'string') updateData.about = about
+        if(typeof experience !== 'undefined') updateData.experience = experience
+
+        // Optional image upload
+        if(req.file){
+            const imageUpload = cloudinary.uploader.upload(req.file.path, {resource_type : "image"})
+            const imageUrl = (await imageUpload).secure_url
+            updateData.image = imageUrl
+        }
+
+        const updated = await doctorModel.findByIdAndUpdate(id, updateData, { new: true })
+
+        if(!updated){
+            return res.json({success:false, message:'Doctor not found'})
+        }
+
+        return res.status(200).json({success:true, message:'Doctor updated successfully', doctor: updated})
+    } catch (error) {
+        console.log(error)
+        return res.json({success:false, message:'Failed to update doctor'})
+    }
+}

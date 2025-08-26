@@ -1,9 +1,9 @@
 import appointmentModel from "../models/appointment.model.js"
+import { doctorModel } from "../models/doctor.model.js";
+import { errorJson } from "../utils/errorJson.js";
 
 const getMyAppointments = async (req, res) => {
     const {userId} = req.user
-
-    console.log("Fetching appointments for user:", userId)
     
 
     try {
@@ -15,8 +15,6 @@ const getMyAppointments = async (req, res) => {
             })
             .select("doctorData amount slotDate slotTime _id cancelled payment isCompleted docId")
             .sort({ createdAt: -1 });
-        
-        console.log("Fetched appointments:", appointments);
       
 
         if (!appointments || appointments.length === 0) {
@@ -47,7 +45,7 @@ const getAllAppointments = async (req, res) => {
             path: "userData",
             select: "name image gender"
         })
-        .select("doctorData userData slotTime slotDate cancelled isCompleted payment")
+        .select("doctorData userData slotTime slotDate cancelled isCompleted payment amount")
         .sort({createdAt : -1})
     
     if(appointments.length === 0) return res.json({success: false, message: "Couldn't find any appointments"})
@@ -55,4 +53,52 @@ const getAllAppointments = async (req, res) => {
     return res.json({success:true, appointments})
 }
 
-export { getMyAppointments, getAllAppointments };
+const completeAppointment = async (req,res) => {
+    const {role} = req.user
+
+    const {appointmentId}= req.body
+
+    if(role !== 'admin' && role !== 'doctor'){
+        return errorJson(401, 'Access Denied', res)
+    }
+
+    const appointmentData = await appointmentModel.findById(appointmentId)
+
+    if(!appointmentData){
+        return errorJson(404, "Couldn't find appointment", res)
+    }
+
+    const slotDate = appointmentData.slotDate
+    const slotTime = appointmentData.slotTime
+
+    if(!appointmentData.payment ){
+        return errorJson(400, "Cannot complete unpaid appointment", res)
+    }
+    if(appointmentData.isCompleted){
+        return errorJson(400, "Appointment already completed", res)
+    }
+    const updatedAppointment = await appointmentModel.findByIdAndUpdate(appointmentData._id, {isCompleted:true})
+
+    console.log(updatedAppointment)
+
+    const doctorData = await doctorModel.findById(appointmentData.docId)
+
+    console.log(doctorData, '---doctor data---')
+
+    let slots_booked = doctorData.slots_booked
+
+    if(!slots_booked || slots_booked[slotDate].length == 0){
+        return errorJson(400, "Couldn't update doctor time slots", res)
+    }
+
+    if(slots_booked[slotDate]){
+        slots_booked[slotDate] = slots_booked[slotDate].filter(time => time != slotTime)
+    }
+
+    await doctorModel.findByIdAndUpdate(appointmentData.docId, {slots_booked})
+
+    return res.status(200).json({success:true, message: "Appointment marked as completed"})
+    
+}
+
+export { getMyAppointments, getAllAppointments, completeAppointment };
