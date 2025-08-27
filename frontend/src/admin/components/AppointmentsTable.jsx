@@ -88,6 +88,8 @@ const AppointmentsTable = ({
             showActions={showActions}
             cancelAppointment={cancelAppointment}
             completeAppointment={completeAppointment}
+            completingId={completingId}
+            cancellingId={cancellingId}
           />
         ))}
       </div>
@@ -140,7 +142,7 @@ const AppointmentsTable = ({
   )
 }
 
-const MobileAppointmentCard = ({ appointment, idx, showActions, cancelAppointment, completeAppointment }) => {
+const MobileAppointmentCard = ({ appointment, idx, showActions, cancelAppointment, completeAppointment, completingId, cancellingId }) => {
   const isDoctorRoute = useLocation().pathname.startsWith('/doctor')
   const { formatDate} = useContext(MyGlobalContext)
   const handleCancel = (appointmentId) => {
@@ -220,20 +222,33 @@ const MobileAppointmentCard = ({ appointment, idx, showActions, cancelAppointmen
         {/* Actions - Hidden for completed appointments */}
         {showActions && !appointment.cancelled && !appointment.isCompleted && (
           <div className="flex justify-center pt-3 border-t border-gray-200">
-            <button onClick={() => handleCancel(appointment._id)} className='flex justify-center cursor-pointer p-2 hover:bg-gray-100 rounded-lg transition-all'>
-              <img 
-                className='self-center' 
-                src={adminAssets.cancel_icon} 
-                alt="Cancel" 
-              />
+            <button 
+              disabled={cancellingId === appointment._id}
+              onClick={() => handleCancel(appointment._id)} 
+              className='flex justify-center items-center gap-2 cursor-pointer p-2 hover:bg-gray-100 rounded-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed'>
+              {cancellingId === appointment._id ? (
+                <span className='inline-block w-5 h-5 border-2 border-gray-300 border-t-primary rounded-full animate-spin'></span>
+              ) : (
+                <img 
+                  className='self-center' 
+                  src={adminAssets.cancel_icon} 
+                  alt="Cancel" 
+                />
+              )}
             </button>
           </div>
         )}
 
         {/* Completion Icon */}
         {!appointment.isCompleted && !appointment.cancelled ? (
-          <div onClick={()=> completeAppointment(appointment._id)} className='mt-4 cursor-pointer hover:border-secondary border border-primary p-2 rounded-lg flex justify-center active:scale-95 transition-all'>
-            <img className='w-10' src={assets.completed_icon} alt="completedIcon" />
+          <div 
+            onClick={()=> { if(completingId !== appointment._id) completeAppointment(appointment._id) }} 
+            className='mt-4 cursor-pointer hover:border-secondary border border-primary p-2 rounded-lg flex justify-center active:scale-95 transition-all'>
+            {completingId === appointment._id ? (
+              <span className='inline-block w-6 h-6 border-2 border-gray-300 border-t-primary rounded-full animate-spin'></span>
+            ) : (
+              <img className='w-10' src={assets.completed_icon} alt="completedIcon" />
+            )}
           </div>
         ) : appointment.isCompleted && (
           <div className='mt-4 flex justify-center p-2'>
