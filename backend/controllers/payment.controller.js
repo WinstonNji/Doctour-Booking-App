@@ -28,7 +28,7 @@ const initatePayment = async (req,res) => {
             tx_ref: Date.now(),
             amount,
             currency: 'RWF',
-            redirect_url : `https://doctour-booking-app-1.onrender.com/verify?appointmentId=${appointmentId}`,
+            redirect_url : `https://doctour-booking-app-frontend.onrender.com/verify?appointmentId=${appointmentId}`,
             payment_options: 'card,mobilemoney,ussd',
             customer: {
                 email,
