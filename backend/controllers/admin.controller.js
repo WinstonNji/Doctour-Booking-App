@@ -12,12 +12,19 @@ export const adminLogin = async (req,res) => {
         return res.status(400).json({success: false, message: "Please enter all fields"})
     }
 
+    // Demo admin account (reviewers only)
+    if(email === 'demo-admin@doctour.app' && password === '123456789'){
+        const token = jwt.sign({ role:'demo_admin' }, process.env.JWT_SECRET, { expiresIn: "2h" })
+        return res.status(200).json({ success: true, message: "Welcome Demo Admin", token })
+    }
+
+    // Real admin account using environment credentials
     if(email == process.env.ADMIN_EMAIL && password == process.env.ADMIN_PASSWORD){
         const token =  jwt.sign({role:'admin'}, process.env.JWT_SECRET, {expiresIn : "2h"} )
         return res.status(200).json({success: true, message: "Welcome Admin", token})
-    }else{
-        return res.json({success: false, message: "Wrong credentials" })
     }
+
+    return res.json({success: false, message: "Wrong credentials" })
 }
 
 // Api to add doctour
