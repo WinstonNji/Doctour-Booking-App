@@ -34,7 +34,9 @@ export const userRegistration = async (req,res) => {
     const newUser = new userModel({name, email, password: hashedPassword})
     await newUser.save()
 
-    return res.status(200).json({success: true, message: `User successfully registered. Welcom ${name}`})
+    const token = jwt.sign({role: 'user', userId: newUser._id }, process.env.JWT_SECRET, {expiresIn:'24h'})
+
+    return res.status(200).json({success: true, message: `User successfully registered. Welcom ${name}`, token})
 
 }
 
