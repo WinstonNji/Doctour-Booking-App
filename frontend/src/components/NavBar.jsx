@@ -118,6 +118,7 @@ const DesktopMenu = () => {
 
 const UserMenu = () => {
     const [profileImg, setProfileImg] = useState(null)
+    const [menuOpen, setMenuOpen] = useState(false)
 
     const {userIsLoggedIn, setUserLoginStatus, setToken, pfp} = useContext(MyGlobalContext)
 
@@ -126,19 +127,22 @@ const UserMenu = () => {
 
     return (
 
-    <div className={`group   relative ${userIsLoggedIn ? 'flex' : 'hidden' }`}>
-        <img className='w-10 rounded-full' src={pfp ? pfp : assets.upload_area} alt="" />
-        <img className='w-4' src={assets.dropDown_icon} alt="" />
+    <div className={`relative items-center ${userIsLoggedIn ? 'flex' : 'hidden' }`}>
+        <button onClick={()=> setMenuOpen(prev => !prev)} className='flex items-center gap-2'>
+            <img className='w-10 rounded-full' src={pfp ? pfp : assets.upload_area} alt="" />
+            <img className='w-4' src={menuOpen ? assets.dropUp_icon : assets.dropDown_icon} alt="" />
+        </button>
 
         <div>
-            <ul className='flex-col gap-2 p-2 hidden group-hover:flex absolute top-[42px] right-[10%] bg-gray-100 w-42 group'>
-                <NavLink className={`${!userIsLoggedIn ? 'hidden' : 'block'}`} to='/my-profile'>
+            {menuOpen && (
+            <ul className='flex flex-col gap-2 p-2 absolute top-[42px] right-[10%] bg-gray-100 w-42 shadow-md rounded-md'>
+                <NavLink className={`${!userIsLoggedIn ? 'hidden' : 'block'}`} to='/my-profile' onClick={()=> setMenuOpen(false)}>
                     <li className='hover:font-bold hover:text-primary'>
                         My Profile
                     </li>
                 </NavLink>
 
-                <NavLink to='/my-appointments'>
+                <NavLink to='/my-appointments' onClick={()=> setMenuOpen(false)}>
                     <li className='hover:font-bold hover:text-primary'>
                         My appointments
                     </li>
@@ -149,18 +153,20 @@ const UserMenu = () => {
                     navigate('/login')
                     setUserLoginStatus(false)
                     setToken('')
+                    setMenuOpen(false)
                 }} className={`${!userIsLoggedIn && isLoginRoute ? 'hidden' : 'block'}`}>
                     <li className={`hover:font-bold hover:text-primary`}>
                         Logout
                     </li>
                 </NavLink>
 
-                <NavLink to='/admin-dashboard'>
+                <NavLink to='/admin-dashboard' onClick={()=> setMenuOpen(false)}>
                     <li className='hover:font-bold hover:text-primary'>
                         Admin
                     </li>
                 </NavLink>
             </ul>
+            )}
         </div>
     </div>
 
