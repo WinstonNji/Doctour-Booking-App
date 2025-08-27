@@ -56,8 +56,12 @@ const MyAppointments = () => {
 
 const AppointmentCard = ({ appointment, refreshAppointments }) => {
   const { clientUrl, token, fetchAllDoctors, formatDate, userData, paymentUrl} = useContext(MyGlobalContext)
+  const [cancellingId, setCancellingId] = useState(null)
+  const [paying, setPaying] = useState(false)
 
   async function makePayment(amount, appointmentId){
+    if(paying) return
+    setPaying(true)
     const email = userData.email
     const name= userData.name
     const endPoint = paymentUrl + `/initiate-payment`
@@ -76,10 +80,12 @@ const AppointmentCard = ({ appointment, refreshAppointments }) => {
     const checkoutUrl = response.data.response.data.link
     window.open(checkoutUrl, "_blank ")
     toast.success("Redirecting to payment gateway")
+    setPaying(false)
   }
 
   const cancelAppointment = async (appointmentId) => {
     try {
+      setCancellingId(appointmentId)
       const endPoint = clientUrl + '/cancel-appointment'
       const headers = { Authorization: `Bearer ${token}` }
       const response = await axios.post(endPoint,  {appointmentId}, { headers })
@@ -94,6 +100,8 @@ const AppointmentCard = ({ appointment, refreshAppointments }) => {
     } catch (error) {
       console.error(error)
       toast.error('An error occurred')
+    } finally {
+      setCancellingId(null)
     }
   }
 
@@ -189,7 +197,7 @@ const AppointmentCard = ({ appointment, refreshAppointments }) => {
                       : 'bg-red-400 hover:bg-red-600 active:bg-red-500 cursor-pointer'
                   }`}
                 >
-                  {appointment.cancelled ? 'Appointment Cancelled' : 'Cancel Appointment'}
+                  {appointment.cancelled ? 'Appointment Cancelled' : (cancellingId === appointment._id ? 'Cancelling…' : 'Cancel Appointment')}
                 </button>
               </>
             )}
