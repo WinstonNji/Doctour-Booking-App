@@ -27,7 +27,7 @@ const Doctors = () => {
   } else {
     setDoctors(doctors)
   }
-}, [speciality]) 
+}, [speciality, doctors]) 
 
 
   return (
