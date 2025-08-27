@@ -17,19 +17,11 @@ const port = process.env.PORT || 4000;
 connectDB();
 connectCloudinary();
 
-// CORS options
-const corsOptions = {
-  origin: 'https://doctour-booking-app-1.onrender.com', // your deployed frontend
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  credentials: true,
-};
 
 // Middlewares
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 
-// Handle preflight requests for all routes
-app.options('*', cors(corsOptions)); // safely handles OPTIONS requests
 
 // API endpoints
 app.use('/api/admin', adminRouter);
