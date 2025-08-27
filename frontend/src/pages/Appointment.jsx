@@ -63,8 +63,6 @@ const Appointment = () => {
     })
   }
 
-  const [booking, setBooking] = useState(false)
-
   const BookAppointment = async () => {
     if(!userIsLoggedIn){
       toast.error('Login is required for this feature')
@@ -83,8 +81,6 @@ const Appointment = () => {
     }
 
     try {
-      if(booking) return
-      setBooking(true)
       const endpoint = clientUrl + '/book-appointment'
       const headers = {
         Authorization: `Bearer ${token}`
@@ -113,8 +109,6 @@ const Appointment = () => {
     } catch (error) {
       console.error(error)
       toast.error('An error Occured')
-    } finally {
-      setBooking(false)
     }
   }
 
@@ -194,11 +188,11 @@ const Appointment = () => {
             </div>
 
             <button 
-              disabled={!selectedDate || !selectedTime || booking} 
+              disabled={!selectedDate || !selectedTime} 
               onClick={BookAppointment} 
-              className={`mt-4 px-16 py-3 cursor-pointer text-white rounded-2xl font-medium ${(!selectedDate || !selectedTime || booking) ? 'bg-gray-400' : 'bg-primary'} disabled:opacity-60 disabled:cursor-not-allowed`}
+              className={`mt-4 px-16 py-3 cursor-pointer text-white rounded-2xl font-medium ${(!selectedDate || !selectedTime) ? 'bg-gray-400' : 'bg-primary'}`}
             >
-              {booking ? 'Booking…' : 'Book an appointment'}
+              Book an appointment
             </button> 
           </div>
         </div>

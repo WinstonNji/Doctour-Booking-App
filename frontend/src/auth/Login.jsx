@@ -48,12 +48,8 @@ function Login() {
   const [register, setRegister] = useState(false)
   const [doctorLogin, setDoctorLogin] = useState(false)
 
-  const [submitting, setSubmitting] = useState(false)
-
   async function Login(event){
     event.preventDefault()
-    if(submitting) return
-    setSubmitting(true)
 
     if(register){
       const endPoint = clientUrl + '/user-registration'
@@ -78,8 +74,6 @@ function Login() {
         }
       } catch (error) {
         console.log(error)
-      } finally {
-        setSubmitting(false)
       }
       return 
     }
@@ -107,8 +101,6 @@ function Login() {
       }catch (error) {
             console.log(error)
             toast.error('Something went wrong. Please try again later')
-        } finally {
-          setSubmitting(false)
         }
 
         return
@@ -137,8 +129,6 @@ function Login() {
       }
     } catch (error) {
       // console.error(error)
-    } finally {
-      setSubmitting(false)
     }
     
     
@@ -218,12 +208,8 @@ function Login() {
                 />
             </div>
 
-            <button disabled={submitting} className='px-8 py-2 bg-primary rounded-full text-white font-semibold hover:scale-105 transition-all duration-150 ease-in-out cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed' type="submit">
-                {submitting ? (
-                  register ? 'Registering…' : doctorLogin ? 'Logging in…' : isLogin ? 'Logging in…' : 'Logging in…'
-                ) : (
-                  register ? 'Register' : 'Login'
-                )}
+            <button  className='px-8 py-2 bg-primary rounded-full text-white font-semibold hover:scale-105 transition-all duration-150 ease-in-out cursor-pointer' type="submit">
+                {register ? 'Register' : 'Login'}
             </button>
 
             {register ? (

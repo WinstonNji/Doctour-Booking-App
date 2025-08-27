@@ -18,16 +18,12 @@ userRouter.patch('/update-user' , authMiddleware, upload.single('image') , updat
 
 userRouter.post('/book-appointment', authMiddleware, bookAppointment )
 
-userRouter.post('/cancel-appointment', authMiddleware, (req,res,next)=>{
-    if(req.user?.role === 'demo_admin'){
-        return res.status(200).json({ success:true, message: 'Demo Mode: simulated success. Changes not saved.' })
-    }
-    next()
-}, cancelappointment)
+userRouter.post('/cancel-appointment', authMiddleware, cancelappointment)
 
 userRouter.get('/verify-user', authMiddleware, (req,res)=> {
     const {role} = req.user
     if(role === "user") return res.json({success:true})
+    
 })
 
 export default userRouter
