@@ -127,7 +127,7 @@ const Appointment = () => {
         return doctor
       }
     }))
-  }, [docId])
+  }, [docId, doctors])
 
   // Reset selected time when date changes
   const handleDateChange = (e) => {
