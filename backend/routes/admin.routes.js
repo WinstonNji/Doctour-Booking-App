@@ -8,12 +8,17 @@ import { authMiddleware } from "../middlewares/authMiddleware.js";
 
 const router = express.Router()
 
-router.post('/add-doctor', authMiddleware , upload.single('image'), addDoctor)
+router.post('/add-doctor', authMiddleware , upload.single('image'), (req,res,next)=>{
+    if(req.user?.role === 'demo_admin'){
+        return res.status(200).json({ success:true, message: 'Demo Mode: simulated success. Changes not saved.' })
+    }
+    next()
+}, addDoctor)
 router.post('/admin-login', adminLogin)
 router.get('/admin-verification', authMiddleware, (req,res) => {
         const {role} = req.user
         
-        if(role !== 'admin') {
+        if(role !== 'admin' && role !== 'demo_admin') {
             return res.json({success: false, message: 'Access Denied'})
         }
         
@@ -22,7 +27,12 @@ router.get('/admin-verification', authMiddleware, (req,res) => {
 })
 
 // update doctor (admin only)
-router.patch('/update-doctor/:id', authMiddleware, upload.single('image'), updateDoctorByAdmin)
+router.patch('/update-doctor/:id', authMiddleware, upload.single('image'), (req,res,next)=>{
+    if(req.user?.role === 'demo_admin'){
+        return res.status(200).json({ success:true, message: 'Demo Mode: simulated success. Changes not saved.' })
+    }
+    next()
+}, updateDoctorByAdmin)
 
 
 export default router
