@@ -47,7 +47,7 @@ function Verification() {
   }, [searchParams])
 
   return (    
-    <div className='h-screen w-screen bg-primary flex flex-col items-center justify-center'>
+    <div className='h-screen w-screen bg-primary flex flex-col items-center justify-center text-center px-4'>
       <h1 className='font-bold text-5xl text-white mb-4'>Verifying your transaction....</h1>
       <p className='font-bold text-4xl'>Please do not close the page</p>
     </div>

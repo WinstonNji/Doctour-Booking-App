@@ -30,6 +30,8 @@ function GlobalContext({children}) {
             // endpoint
             const endpoint = `${values.generalUrl}` + '/getAllDoctors'
 
+            console.log(endpoint, '----fetch all doctors')
+
             // headers
             const headers = {
                 Authorization : `Bearer ${token}`
@@ -54,12 +56,12 @@ function GlobalContext({children}) {
 
     const values = {
         // Urls
-        adminBackendUrl : 'https://doctour-booking-app.onrender.com/api/admin',
-        generalUrl : 'https://doctour-booking-app.onrender.com/api/doctourApp/general',
-        clientUrl : 'https://doctour-booking-app.onrender.com/api/user',
-        appointmentUrl : 'https://doctour-booking-app.onrender.com/api/appointment',
-        paymentUrl : 'https://doctour-booking-app.onrender.com/api/payments',
-        doctorUrl : 'https://doctour-booking-app.onrender.com/api/doctor',
+        adminBackendUrl : 'https://doctour-booking-app-backend.onrender.com/api/admin',
+        generalUrl : 'https://doctour-booking-app-backend.onrender.com/api/doctourApp/general',
+        clientUrl : 'https://doctour-booking-app-backend.onrender.com/api/user',
+        appointmentUrl : 'https://doctour-booking-app-backend.onrender.com/api/appointment',
+        paymentUrl : 'https://doctour-booking-app-backend.onrender.com/api/payments',
+        doctorUrl : 'https://doctour-booking-app-backend.onrender.com/api/doctor',
         // Token
         token,
         setToken,
