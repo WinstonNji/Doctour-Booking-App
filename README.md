@@ -11,8 +11,8 @@ Doctour Booking App is a full‑stack doctor appointment booking platform. Patie
 - Hosting: Render (backend and frontend)
 
 ## Live URLs
-- Frontend: https://doctour-booking-app-1.onrender.com/
-- Backend: https://doctour-booking-app.onrender.com/
+- Frontend: https://doctour-booking-app-frontend.onrender.com
+- Backend: https://doctour-booking-app-backend.onrender.com
 
 ## Features
 - User registration and login (JWT)
