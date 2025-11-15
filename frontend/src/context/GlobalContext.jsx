@@ -9,6 +9,7 @@ function GlobalContext({children}) {
 
     const [token, setToken] = useState(localStorage.getItem('token') ? localStorage.getItem('token') : '' )
     const [doctors, setDoctors] = useState([])
+    const [loading, setLoading] = useState(true) // Add loading state
     const [userIsLoggedIn, setUserLoginStatus] = useState(false)
     const [pfp, setPfp] = useState(null)
     const [userData, setUserData] = useState({
@@ -27,7 +28,7 @@ function GlobalContext({children}) {
 
     const fetchAllDoctors = async () => {
         try {
-            // endpoint
+            setLoading(true) 
             const endpoint = `${values.generalUrl}` + '/getAllDoctors'
 
             console.log(endpoint, '----fetch all doctors')
@@ -42,7 +43,9 @@ function GlobalContext({children}) {
             setDoctors(response.data.doctors)
             
         } catch (error) {
-                    
+            console.error('Error fetching doctors:', error)
+        } finally {
+            setLoading(false) // Set loading to false after fetch completes
         }
     } 
 
@@ -69,6 +72,7 @@ function GlobalContext({children}) {
         // doctor
         doctors,
         fetchAllDoctors,
+        loading, // Add loading to context values
 
         // User
         userIsLoggedIn,

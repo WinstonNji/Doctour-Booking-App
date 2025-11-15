@@ -1,10 +1,18 @@
 @import "tailwindcss";
+@plugin "daisyui";
+
 
 @theme {
   --color-primary: #5f6fff;
   --breakpoint-tablet : 768px;
   --color-secondary: #E2E5FF;
   --color-btnHover: #7C82FF;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 .menuNav .a.active{
